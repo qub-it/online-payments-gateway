@@ -1,4 +1,4 @@
-package org.fenixedu.demo.client;
+package org.fenixedu.onlinepaymentsgateway.sdk;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -39,7 +39,7 @@ public class BasicClient {
 			String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm, String ip, String surname,
 			String givenName, String country, String shopperResultUrl) {
 		WebTarget postit = base.path("payments");
-		org.fenixedu.demo.client.Authentication auth = new Authentication(userId, password, entityId);
+		org.fenixedu.onlinepaymentsgateway.sdk.Authentication auth = new Authentication(userId, password, entityId);
 		PrepareCheckout prepCheckout = new PrepareCheckout(auth, amount, currency, paymentType);
 		PrepareMBCheckout mbPrepCheckout = new PrepareMBCheckout(auth, prepCheckout, paymentBrand,
 				merchantTransactionId, sIBSMULTIBANCO_PtmntEntty, sIBSMULTIBANCO_RefIntlDtTm, sIBSMULTIBANCO_RefLmtDtTm,

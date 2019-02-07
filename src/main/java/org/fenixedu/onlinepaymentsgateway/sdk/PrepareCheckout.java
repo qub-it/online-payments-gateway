@@ -1,4 +1,4 @@
-package org.fenixedu.demo.client;
+package org.fenixedu.onlinepaymentsgateway.sdk;
 
 import javax.ws.rs.core.MultivaluedMap;
 

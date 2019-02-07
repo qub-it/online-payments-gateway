@@ -1,4 +1,4 @@
-package org.fenixedu.demo.client;
+package org.fenixedu.onlinepaymentsgateway.sdk;
 
 /**
  * @author racarvalho
