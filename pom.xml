@@ -3,43 +3,41 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.fenixedu</groupId>
-        <artifactId>fenix-framework-project</artifactId>
-        <version>2.4.0</version>
-        <relativePath/>
-    </parent>
-
     <groupId>org.fenixedu</groupId>
     <artifactId>online-payments-gateway</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Online Payments Gateway</name>
-
-    <properties>
-        <version.org.fenixedu.bennu>5.1.1</version.org.fenixedu.bennu>
-        <version.org.fenixedu.bennu.spring>1.2.0</version.org.fenixedu.bennu.spring>
-    </properties>
-
+	
+	<properties>
+		<java.compilation.source.version>1.8</java.compilation.source.version>
+		<java.compilation.target.version>1.8</java.compilation.target.version>
+		<version.org.apache.maven.plugins.maven.compiler.plugin>3.1</version.org.apache.maven.plugins.maven.compiler.plugin>
+	</properties>
+	
     <dependencies>
-        <dependency>
-            <groupId>org.fenixedu</groupId>
-            <artifactId>bennu-core</artifactId>
-            <version>${version.org.fenixedu.bennu}</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
 		<dependency>
 		    <groupId>javax.ws.rs</groupId>
 		    <artifactId>javax.ws.rs-api</artifactId>
 		    <version>2.0.1</version>
 		</dependency>
-		<!-- <dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>javax.json</artifactId>
-    <version>1.1</version>
-</dependency>-->
     </dependencies>
+
+	<build>
+		<plugins>
+	        <plugin>
+	              <groupId>org.apache.maven.plugins</groupId>
+	              <artifactId>maven-compiler-plugin</artifactId>
+	              <version>${version.org.apache.maven.plugins.maven.compiler.plugin}</version>
+	              <configuration>
+	                      <source>${java.compilation.source.version}</source>
+	                      <target>${java.compilation.target.version}</target>
+	              </configuration>
+        	</plugin>
+		</plugins>
+	</build>
 
     <repositories>
         <repository>
