@@ -1,11 +1,11 @@
 package org.fenixedu.onlinepaymentsgateway.sdk;
 
-/**
- * @author racarvalho
- *
- */
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PrepareCheckoutResult {
 
+    @JsonIgnoreProperties(ignoreUnknown=true)
 	public static class Result {
 		private String code;
 		private String description;
@@ -31,7 +31,7 @@ public class PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "Result [code=" + code + ", description=" + description + "]";
+			return "[code=" + code + ", description=" + description + "]";
 		}
 
 	}
@@ -88,7 +88,7 @@ public class PrepareCheckoutResult {
 
 	@Override
 	public String toString() {
-		return "PrepareCheckoutResult [result=" + result + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp
+		return "[result=" + result + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp
 				+ ", ndc=" + ndc + ", id=" + id + "]";
 	}
 

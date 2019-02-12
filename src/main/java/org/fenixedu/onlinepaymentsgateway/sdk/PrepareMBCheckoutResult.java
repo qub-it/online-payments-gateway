@@ -1,25 +1,32 @@
 package org.fenixedu.onlinepaymentsgateway.sdk;
 
-/**
- * @author racarvalho
- *
- */
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
-	public PrepareMBCheckoutResult() {
+	
+    public PrepareMBCheckoutResult() {
 		super();
 	}
-
+	
+	@JsonIgnoreProperties(ignoreUnknown=true)
 	public static class ResultDetails {
-
+	    
+	    @JsonProperty("ExtendedDescription")
 		private String ExtendedDescription;
 		private String refLmtDtTm;
 		private String amount;
 		private String ptmntEntty;
+		@JsonProperty("ConnectorTxID1")
 		private String ConnectorTxID1;
+		@JsonProperty("ConnectorTxID3")
 		private String ConnectorTxID3;
+		@JsonProperty("ConnectorTxID2")
 		private String ConnectorTxID2;
 		private String pmtRef;
-		private String acquirerResponse;
+		@JsonProperty("AcquirerResponse")
+		private String AcquirerResponse;
 		private String uuid;
 		private String pmtRefNtty;
 
@@ -91,11 +98,11 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 		}
 
 		public String getAcquirerResponse() {
-			return acquirerResponse;
+			return AcquirerResponse;
 		}
 
 		public void setAcquirerResponse(String acquirerResponse) {
-			this.acquirerResponse = acquirerResponse;
+			this.AcquirerResponse = acquirerResponse;
 		}
 
 		public String getUuid() {
@@ -116,13 +123,14 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "ResultDetails [ExtendedDescription=" + ExtendedDescription + ", refLmtDtTm=" + refLmtDtTm
+			return "[ExtendedDescription=" + ExtendedDescription + ", refLmtDtTm=" + refLmtDtTm
 					+ ", amount=" + amount + ", ptmntEntty=" + ptmntEntty + ", ConnectorTxID1=" + ConnectorTxID1
 					+ ", ConnectorTxID3=" + ConnectorTxID3 + ", ConnectorTxID2=" + ConnectorTxID2 + ", pmtRef=" + pmtRef
-					+ ", AcquirerResponse=" + acquirerResponse + ", uuid=" + uuid + ", pmtRefNtty=" + pmtRefNtty + "]";
+					+ ", AcquirerResponse=" + AcquirerResponse + ", uuid=" + uuid + ", pmtRefNtty=" + pmtRefNtty + "]";
 		}
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown=true)
 	public static class Customer {
 		private String givenName;
 		private String surname;
@@ -157,14 +165,19 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "Customer [givenName=" + givenName + ", surname=" + surname + ", ip=" + ip + "]";
+			return "[givenName=" + givenName + ", surname=" + surname + ", ip=" + ip + "]";
 		}
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown=true)
 	public static class CustomParameters {
-		private String SIBSMULTIBANCO_PtmntEntty;
+		
+	    @JsonProperty("SIBSMULTIBANCO_PtmntEntty")
+	    private String SIBSMULTIBANCO_PtmntEntty;
+	    @JsonProperty("SIBSMULTIBANCO_RefIntlDtTm")
 		private String SIBSMULTIBANCO_RefIntlDtTm;
+	    @JsonProperty("SIBSMULTIBANCO_RefLmtDtTm")
 		private String SIBSMULTIBANCO_RefLmtDtTm;
 
 		public CustomParameters() {
@@ -196,13 +209,14 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "customParameters [SIBSMULTIBANCO_PtmntEntty=" + SIBSMULTIBANCO_PtmntEntty
+			return "[SIBSMULTIBANCO_PtmntEntty=" + SIBSMULTIBANCO_PtmntEntty
 					+ ", SIBSMULTIBANCO_RefIntlDtTm=" + SIBSMULTIBANCO_RefIntlDtTm + ", SIBSMULTIBANCO_RefLmtDtTm="
 					+ SIBSMULTIBANCO_RefLmtDtTm + "]";
 		}
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown=true)
 	public static class Billing {
 		private String country;
 
@@ -219,7 +233,7 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "Billing [country=" + country + "]";
+			return "[country=" + country + "]";
 		}
 
 	}
@@ -317,7 +331,7 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 	@Override
 	public String toString() {
-		return "PrepareMBCheckoutResult [id=" + id + ", paymentType=" + paymentType + ", paymentBrand=" + paymentBrand
+		return "[id=" + id + ", paymentType=" + paymentType + ", paymentBrand=" + paymentBrand
 				+ ", amount=" + amount + ", currency=" + currency + ", descriptor=" + descriptor
 				+ ", merchantTransactionId=" + merchantTransactionId + ", result=" + result + ", resultDetails="
 				+ resultDetails + ", customer=" + customer + ", billing=" + billing + ", customParameters="

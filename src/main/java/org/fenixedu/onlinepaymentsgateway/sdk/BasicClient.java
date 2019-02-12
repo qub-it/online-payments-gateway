@@ -45,9 +45,8 @@ public class BasicClient {
 				merchantTransactionId, sIBSMULTIBANCO_PtmntEntty, sIBSMULTIBANCO_RefIntlDtTm, sIBSMULTIBANCO_RefLmtDtTm,
 				ip, surname, givenName, country, shopperResultUrl);
 		Form form = new Form(mbPrepCheckout.asMap());
-
 		PrepareMBCheckoutResult json = postit.request("application/x-www-form-urlencoded; charset=UTF-8")
-				.accept(MediaType.APPLICATION_JSON).post(Entity.form(form), PrepareMBCheckoutResult.class);
+		        .accept(MediaType.APPLICATION_JSON).post(Entity.form(form), PrepareMBCheckoutResult.class);
 		return json.toString();
 	}
 
