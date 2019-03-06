@@ -3,10 +3,10 @@ package org.fenixedu.onlinepaymentsgateway.sdk;
 import javax.ws.rs.core.MultivaluedMap;
 
 public class PrepareCheckout {
-	Authentication authentication;
-	String amount;
-	String currency;
-	PaymentType paymentType;
+    private Authentication authentication;
+    private String amount;
+    private String currency;
+    private PaymentType paymentType;
 
 	public PrepareCheckout(Authentication authentication, String amount, String currency, String paymentType) {
 		super();

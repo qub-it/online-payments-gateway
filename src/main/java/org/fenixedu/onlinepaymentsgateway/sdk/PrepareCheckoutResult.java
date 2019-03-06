@@ -31,7 +31,7 @@ public class PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "[code=" + code + ", description=" + description + "]";
+			return "{code=" + code + ", description=" + description + "}";
 		}
 
 	}
@@ -88,8 +88,8 @@ public class PrepareCheckoutResult {
 
 	@Override
 	public String toString() {
-		return "[result=" + result + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp
-				+ ", ndc=" + ndc + ", id=" + id + "]";
+		return "{result=" + result + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp
+				+ ", ndc=" + ndc + ", id=" + id + "}";
 	}
 
 }

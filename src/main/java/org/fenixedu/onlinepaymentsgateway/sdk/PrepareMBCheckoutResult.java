@@ -123,10 +123,10 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "[ExtendedDescription=" + ExtendedDescription + ", refLmtDtTm=" + refLmtDtTm
+			return "{ExtendedDescription=" + ExtendedDescription + ", refLmtDtTm=" + refLmtDtTm
 					+ ", amount=" + amount + ", ptmntEntty=" + ptmntEntty + ", ConnectorTxID1=" + ConnectorTxID1
 					+ ", ConnectorTxID3=" + ConnectorTxID3 + ", ConnectorTxID2=" + ConnectorTxID2 + ", pmtRef=" + pmtRef
-					+ ", AcquirerResponse=" + AcquirerResponse + ", uuid=" + uuid + ", pmtRefNtty=" + pmtRefNtty + "]";
+					+ ", AcquirerResponse=" + AcquirerResponse + ", uuid=" + uuid + ", pmtRefNtty=" + pmtRefNtty + "}";
 		}
 	}
 
@@ -165,7 +165,7 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "[givenName=" + givenName + ", surname=" + surname + ", ip=" + ip + "]";
+			return "{givenName=" + givenName + ", surname=" + surname + ", ip=" + ip + "}";
 		}
 
 	}
@@ -209,9 +209,9 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "[SIBSMULTIBANCO_PtmntEntty=" + SIBSMULTIBANCO_PtmntEntty
+			return "{SIBSMULTIBANCO_PtmntEntty=" + SIBSMULTIBANCO_PtmntEntty
 					+ ", SIBSMULTIBANCO_RefIntlDtTm=" + SIBSMULTIBANCO_RefIntlDtTm + ", SIBSMULTIBANCO_RefLmtDtTm="
-					+ SIBSMULTIBANCO_RefLmtDtTm + "]";
+					+ SIBSMULTIBANCO_RefLmtDtTm + "}";
 		}
 
 	}
@@ -233,7 +233,7 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 		@Override
 		public String toString() {
-			return "[country=" + country + "]";
+			return "{country=" + country + "}";
 		}
 
 	}
@@ -331,11 +331,11 @@ public class PrepareMBCheckoutResult extends PrepareCheckoutResult {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", paymentType=" + paymentType + ", paymentBrand=" + paymentBrand
+		return "MBResult {id=" + id + ", paymentType=" + paymentType + ", paymentBrand=" + paymentBrand
 				+ ", amount=" + amount + ", currency=" + currency + ", descriptor=" + descriptor
 				+ ", merchantTransactionId=" + merchantTransactionId + ", result=" + result + ", resultDetails="
 				+ resultDetails + ", customer=" + customer + ", billing=" + billing + ", customParameters="
-				+ customParameters + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp + ", ndc=" + ndc + "]";
+				+ customParameters + ", buildNumber=" + buildNumber + ", timestamp=" + timestamp + ", ndc=" + ndc +"}";
 	}
 
 }
