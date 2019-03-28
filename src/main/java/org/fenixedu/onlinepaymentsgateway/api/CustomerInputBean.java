@@ -7,6 +7,17 @@ public class CustomerInputBean {
     private String customerGivenName;
     private String customerCountry;
 
+    public CustomerInputBean(String customerIp, String customerSurname, String customerGivenName, String customerCountry) {
+        super();
+        this.customerIp = customerIp;
+        this.customerSurname = customerSurname;
+        this.customerGivenName = customerGivenName;
+        this.customerCountry = customerCountry;
+    }
+
+    public CustomerInputBean() {
+    }
+
     public String getIp() {
         return customerIp;
     }

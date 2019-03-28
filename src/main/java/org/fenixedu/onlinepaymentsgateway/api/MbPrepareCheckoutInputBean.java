@@ -5,43 +5,61 @@ import java.math.BigDecimal;
 import org.joda.time.DateTime;
 
 public class MbPrepareCheckoutInputBean {
-    
+
     private BigDecimal amount;
-    private String merchantTransactionId; 
-    private DateTime sIBSMULTIBANCO_RefIntlDtTm;
-    private DateTime sIBSMULTIBANCO_RefLmtDtTm;  
-    
+    private String merchantTransactionId;
+    private DateTime sibsRefIntDate;
+    private DateTime sibsRefLmtDate;
+
+    public MbPrepareCheckoutInputBean(BigDecimal amount, String merchantTransactionId, DateTime sibsRefIntDate,
+            DateTime sibsRefLmtDate) {
+        super();
+        this.amount = amount;
+        this.merchantTransactionId = merchantTransactionId;
+        this.sibsRefIntDate = sibsRefIntDate;
+        this.sibsRefLmtDate = sibsRefLmtDate;
+    }
+
+    public MbPrepareCheckoutInputBean() {
+    }
+
     public boolean isPropertiesValid() {
         boolean returnValue = true;
-        returnValue &= amount!= null && amount.compareTo(BigDecimal.ZERO)> 0;
-        //TODO completar beans
-        
+        returnValue &= amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
+        returnValue &= merchantTransactionId != null && !merchantTransactionId.isEmpty();
+        returnValue &= sibsRefIntDate != null && sibsRefLmtDate != null && sibsRefIntDate.isBefore(sibsRefLmtDate);
         return returnValue;
-        
     }
-    
+
     public BigDecimal getAmount() {
         return amount;
     }
+
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
+
     public String getMerchantTransactionId() {
         return merchantTransactionId;
     }
+
     public void setMerchantTransactionId(String merchantTransactionId) {
         this.merchantTransactionId = merchantTransactionId;
     }
-    public DateTime getsIBSMULTIBANCO_RefIntlDtTm() {
-        return sIBSMULTIBANCO_RefIntlDtTm;
+
+    public DateTime getSibsRefIntDate() {
+        return sibsRefIntDate;
     }
-    public void setsIBSMULTIBANCO_RefIntlDtTm(DateTime sIBSMULTIBANCO_RefIntlDtTm) {
-        this.sIBSMULTIBANCO_RefIntlDtTm = sIBSMULTIBANCO_RefIntlDtTm;
+
+    public void setSibsRefIntDate(DateTime sibsRefIntDate) {
+        this.sibsRefIntDate = sibsRefIntDate;
     }
-    public DateTime getsIBSMULTIBANCO_RefLmtDtTm() {
-        return sIBSMULTIBANCO_RefLmtDtTm;
+
+    public DateTime getSibsRefLmtDate() {
+        return sibsRefLmtDate;
     }
-    public void setsIBSMULTIBANCO_RefLmtDtTm(DateTime sIBSMULTIBANCO_RefLmtDtTm) {
-        this.sIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
+
+    public void setSibsRefLmtDate(DateTime sibsRefLmtDate) {
+        this.sibsRefLmtDate = sibsRefLmtDate;
     }
 }

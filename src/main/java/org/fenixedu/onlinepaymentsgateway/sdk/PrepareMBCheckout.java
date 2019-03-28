@@ -4,6 +4,9 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.fenixedu.onlinepaymentsgateway.api.CustomerInputBean;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class PrepareMBCheckout {
 
     private PrepareCheckout prepareCheckout;
@@ -13,10 +16,11 @@ public class PrepareMBCheckout {
     private String SIBSMULTIBANCO_PtmntEntty;
     private String SIBSMULTIBANCO_RefIntlDtTm;
     private String SIBSMULTIBANCO_RefLmtDtTm;
+    private String billingCountry;
 
     public PrepareMBCheckout(PrepareCheckout prepareCheckout, String paymentBrand, String merchantTransactionId,
             String sIBSMULTIBANCO_PtmntEntty, String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm,
-            CustomerInputBean customerInput) {
+            String billingCountry, CustomerInputBean customerInput) {
         super();
         this.prepareCheckout = prepareCheckout;
         this.paymentBrand = PaymentBrand.valueOf(paymentBrand);
@@ -24,6 +28,7 @@ public class PrepareMBCheckout {
         this.SIBSMULTIBANCO_PtmntEntty = sIBSMULTIBANCO_PtmntEntty;
         this.SIBSMULTIBANCO_RefIntlDtTm = sIBSMULTIBANCO_RefIntlDtTm;
         this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
+        this.billingCountry = billingCountry;
         this.customerInput = customerInput;
     }
 
@@ -83,6 +88,14 @@ public class PrepareMBCheckout {
         this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
     }
 
+    public String getBillingCountry() {
+        return billingCountry;
+    }
+
+    public void setBillingCountry(String billingCountry) {
+        this.billingCountry = billingCountry;
+    }
+
     public MultivaluedMap<String, String> asMap() {
         MultivaluedMap<String, String> form = prepareCheckout.asMap();
         form.add("paymentBrand", paymentBrand.toString());
@@ -90,6 +103,7 @@ public class PrepareMBCheckout {
         form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
         form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
+        form.add("billing[country]", billingCountry);
         if (customerInput != null) {
             if (customerInput.getIp() != null) {
                 form.add("customer.ip", customerInput.getIp());
@@ -105,5 +119,18 @@ public class PrepareMBCheckout {
             }
         }
         return form;
+    }
+
+    @Override
+    public String toString() {
+        MultivaluedMap<String, String> map = this.asMap();
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "";
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 }
