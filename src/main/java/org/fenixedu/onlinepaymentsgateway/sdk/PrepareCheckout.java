@@ -11,13 +11,19 @@ public class PrepareCheckout {
     private String amount;
     private String currency;
     private PaymentType paymentType;
+    private String merchantTransactionId;
+    private String shopperResultUrl;
 
-    public PrepareCheckout(String entityId, String amount, String currency, String paymentType) {
+    public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String merchantTransactionId) {
         super();
         this.entityId = entityId;
         this.amount = amount;
         this.currency = currency;
         this.paymentType = PaymentType.valueOf(paymentType);
+        this.merchantTransactionId = merchantTransactionId;
+    }
+
+    public PrepareCheckout() {
     }
 
     public String getEntityId() {
@@ -52,12 +58,30 @@ public class PrepareCheckout {
         this.paymentType = PaymentType.valueOf(paymentType);
     }
 
+    public String getMerchantTransactionId() {
+        return merchantTransactionId;
+    }
+
+    public void setMerchantTransactionId(String merchantTransactionId) {
+        this.merchantTransactionId = merchantTransactionId;
+    }
+
+    public String getShopperResultUrl() {
+        return shopperResultUrl;
+    }
+
+    public void setShopperResultUrl(String shopperResultUrl) {
+        this.shopperResultUrl = shopperResultUrl;
+    }
+
     public MultivaluedMap<String, String> asMap() {
         MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
-        form.add(entityId, entityId);
+        form.add("entityId", entityId);
         form.add("amount", amount);
         form.add("currency", currency);
         form.add("paymentType", paymentType.toString());
+        form.add("merchantTransactionId", merchantTransactionId);
+        form.add("shopperResultUrl", shopperResultUrl);
         return form;
     }
 

@@ -1,13 +1,13 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
-public class CustomerInputBean {
+public class CustomerDataInputBean {
 
     private String customerIp;
     private String customerSurname;
     private String customerGivenName;
     private String customerCountry;
 
-    public CustomerInputBean(String customerIp, String customerSurname, String customerGivenName, String customerCountry) {
+    public CustomerDataInputBean(String customerIp, String customerSurname, String customerGivenName, String customerCountry) {
         super();
         this.customerIp = customerIp;
         this.customerSurname = customerSurname;
@@ -15,7 +15,7 @@ public class CustomerInputBean {
         this.customerCountry = customerCountry;
     }
 
-    public CustomerInputBean() {
+    public CustomerDataInputBean() {
     }
 
     public String getIp() {

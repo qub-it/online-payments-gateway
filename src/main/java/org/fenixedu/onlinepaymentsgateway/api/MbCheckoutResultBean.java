@@ -52,6 +52,9 @@ public class MbCheckoutResultBean {
         this.paymentGatewayResultDescription = resultDescription;
     }
 
+    public MbCheckoutResultBean() {
+    }
+
     public boolean isOperationSuccess() {
         return this.operationResultType.isSuccess();
         //  "000.100.110".equals(this.sibsResultCode); //detalhe de comunicaçao deve tar no sdk.

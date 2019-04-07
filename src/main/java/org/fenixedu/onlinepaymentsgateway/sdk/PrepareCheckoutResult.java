@@ -105,5 +105,4 @@ public class PrepareCheckoutResult {
         }
         return json;
     }
-
 }

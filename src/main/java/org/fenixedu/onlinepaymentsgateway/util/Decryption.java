@@ -1,5 +1,6 @@
 package org.fenixedu.onlinepaymentsgateway.util;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.crypto.Cipher;
@@ -7,6 +8,10 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
+import org.fenixedu.onlinepaymentsgateway.sdk.NotificationBean;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Decryption {
 
@@ -17,7 +22,7 @@ public class Decryption {
     private String authTag = "<X-Authentication-Tag Header>";
     private String payload = "<payload body>";
 
-    public Decryption(String iv, String aesKey, String authTag, String payload) {
+    public Decryption(String aesKey, String iv, String authTag, String payload) {
         super();
         this.iv = iv;
         this.aesKey = aesKey;
@@ -61,7 +66,7 @@ public class Decryption {
         return GCM_TAG_LENGTH;
     }
 
-    public String decrypt() throws Exception {
+    public String decryptPayload() throws Exception {
         byte[] bKey = Hex.decodeHex(aesKey.toCharArray());
         byte[] bIV = Hex.decodeHex(iv.toCharArray());
         byte[] encryptedBytes = Hex.decodeHex((payload + authTag).toCharArray());
@@ -73,4 +78,22 @@ public class Decryption {
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
+
+    public NotificationBean handleNotification(String jsonPayload) {
+        ObjectMapper mapper = new ObjectMapper();
+        NotificationBean notificationPayload = null;
+        try {
+            notificationPayload = mapper.readValue(jsonPayload, NotificationBean.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return notificationPayload;
+    }
+
+    /*public MBNotificationBean handleMBNotification(NotificationBean notificationBean) {
+        return null
+    }*/
+
 }
