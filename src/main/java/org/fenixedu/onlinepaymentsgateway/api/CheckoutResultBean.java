@@ -1,5 +1,7 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,25 +11,29 @@ public class CheckoutResultBean {
     private String merchantTransactionId;
     private String timestamp; //Date
     private String shopperResultUrl;
-
+    private String paymentAmount;
+    private String paymentCurrency;
     private String paymentGatewayResultCode;
     private String paymentGatewayResultDescription;
 
     private String requestLog;
     private String responseLog;
-    private OnlinePaymentOperationResultType operationResultType;
+    private SibsResultCodeType operationResultType;
     private String operationResultDescription;
 
     private String paymentBrands;
 
-    public CheckoutResultBean(String id, String merchantTransactionId, String timestamp, String shopperResultUrl,
-            OnlinePaymentOperationResultType operationResultType, String operationResultDescription, String resultCode,
+    private Exception exception;
+
+    public CheckoutResultBean(String id, String timestamp, String shopperResultUrl, String paymentAmount, String paymentCurrency,
+            SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
             String resultDescription) {
         super();
         this.id = id;
-        this.merchantTransactionId = merchantTransactionId;
         this.timestamp = timestamp;
         this.shopperResultUrl = shopperResultUrl;
+        this.paymentAmount = paymentAmount;
+        this.paymentCurrency = paymentCurrency;
         this.paymentGatewayResultCode = resultCode;
         this.paymentGatewayResultDescription = resultDescription;
         this.operationResultType = operationResultType;
@@ -74,6 +80,22 @@ public class CheckoutResultBean {
         this.shopperResultUrl = shopperResultUrl;
     }
 
+    public String getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(String paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public String getPaymentCurrency() {
+        return paymentCurrency;
+    }
+
+    public void setPaymentCurrency(String paymentCurrency) {
+        this.paymentCurrency = paymentCurrency;
+    }
+
     public String getPaymentGatewayResultCode() {
         return paymentGatewayResultCode;
     }
@@ -106,11 +128,11 @@ public class CheckoutResultBean {
         this.responseLog = responseLog;
     }
 
-    public OnlinePaymentOperationResultType getOperationResultType() {
+    public SibsResultCodeType getOperationResultType() {
         return operationResultType;
     }
 
-    public void setOperationResultType(OnlinePaymentOperationResultType operationResultType) {
+    public void setOperationResultType(SibsResultCodeType operationResultType) {
         this.operationResultType = operationResultType;
     }
 
@@ -130,6 +152,14 @@ public class CheckoutResultBean {
         this.paymentBrands = paymentBrands;
     }
 
+    public Exception getException() {
+        return exception;
+    }
+
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
+
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
@@ -141,4 +171,5 @@ public class CheckoutResultBean {
         }
         return json;
     }
+
 }

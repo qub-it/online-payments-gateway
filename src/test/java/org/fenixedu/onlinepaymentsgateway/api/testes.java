@@ -1,58 +1,49 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
-import java.math.BigDecimal;
-
-import org.fenixedu.onlinepaymentsgateway.sdk.NotificationBean;
-import org.joda.time.DateTime;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class testes {
 
     public static void main(String[] args) throws Exception {
-        System.out.println(generateMultibancoPayment().toString());
+        //System.out.println(generateMultibancoPayment().toString());
     }
 
-    private static MbCheckoutResultBean generateMultibancoPayment() throws Exception {
-        SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2",
-                "OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==", "https://test.oppwa.com/v1", "25002", "EUR");
+    /*private static MbCheckoutResultBean generateMultibancoPayment() throws Exception {
+        SIBSInitializeServiceBean initializeServiceBean =
+                new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2", "https://test.oppwa.com/v1", "25002", "EUR");
+        initializeServiceBean.setBearerToken("OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==");
         SIBSOnlinePaymentsGatewayService applicationClient =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
         MbPrepareCheckoutInputBean mbPrepareCheckoutInputBean =
                 new MbPrepareCheckoutInputBean(new BigDecimal("2.1"), "fcul47167", new DateTime(), new DateTime().plusDays(7));
-        CustomerDataInputBean customerInputBean = new CustomerDataInputBean("1.1.1.1", "Pistolas", "Jonas", "Portugal");
+        CustomerDataInputBean customerInputBean = new CustomerDataInputBean("1.1.1.1", "Pistolas", "Jonas");
         //MbCheckoutResultBean paymentResult = applicationClient.mbPrepareCheckout(mbPrepareCheckoutInputBean, null);
         MbCheckoutResultBean paymentResult = applicationClient.mbPrepareCheckout(mbPrepareCheckoutInputBean, customerInputBean);
-        //return paymentResult.toString(); //MBResult {id=8ac7a4a2695dd81101695e6902904107, paymentType=PA, paymentBrand=SIBS_MULTIBANCO, amount=2.10, currency=EUR, descriptor=null, merchantTransactionId=fcul47167, result={code=000.100.110, description=Request successfully processed in 'Merchant in Integrator Test Mode'}, resultDetails=null, customer=null, billing=null, customParameters={SIBSMULTIBANCO_PtmntEntty=25002, SIBSMULTIBANCO_RefIntlDtTm=2019-03-08T17:45:29.292Z, SIBSMULTIBANCO_RefLmtDtTm=2019-03-15T17:45:29.292Z}, buildNumber=a73ed4ca34cf70ac2eeeab8eed20cadca78a5122@2019-03-07 04:42:24 +0000, timestamp=2019-03-08 17:45:34+0000, ndc=8a8294186316c36b016325a4e823400f_196289667f414dd8b9c3d591d5b90db6}
         return paymentResult;
     }
-
-    @SuppressWarnings("unused") //getMBtransactionReport
-    private MbCheckoutResultBean getTransactionReport(MbCheckoutResultBean mbResultBean) throws Exception {
-        SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2",
-                "OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==", "https://test.oppwa.com/v1", "25002", "EUR");
+    
+    @SuppressWarnings("unused")
+    private TransactionReportBean getTransactionReport(MbCheckoutResultBean mbResultBean) throws Exception {
+        SIBSInitializeServiceBean initializeServiceBean =
+                new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2", "https://test.oppwa.com/v1", "25002", "EUR");
+        initializeServiceBean.setBearerToken("OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==");
         SIBSOnlinePaymentsGatewayService applicationClient =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
-        String transactionId = applicationClient.getMBPaymentTransactionId(mbResultBean);
-        //assert beans iguais
-        MbCheckoutResultBean transactionReportBean = applicationClient.getMBPaymentTransactionReport(transactionId);
+        String transactionId = mbResultBean.getId();
+        TransactionReportBean transactionReportBean = applicationClient.getPaymentTransactionReport(transactionId);
         return transactionReportBean;
     }
-
+    
     @SuppressWarnings("unused")
     private NotificationBean handleWebhookNotification() throws Exception { //servlet como arg
         //TODO outro construtor com o servlet
         //Receber o httpservlet request (argumento do metodo) - criar um bean com os dados do header e do payload, listener vs callback
         //handlenotification(servletrequest.getheader(Vetores)...
         //Interface com handlers do lado aplicacional (handlepaymentMb ou handleError()
-
+    
         //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
-
+    
         SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2",
-                "OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==",
                 "E78D1277059759CD76EC4D387907DA6A4E6F882C52E10A78CF3587D8679FE00C");
+        initializeServiceBean.setBearerToken("OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==");
         SIBSOnlinePaymentsGatewayService applicationClient =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
         String initializationVector = "33FF841C5FFCB95D3BA9593A";
@@ -62,37 +53,39 @@ public class testes {
         //Bean devolvido com estados de pagamento
         return applicationClient.decodePaymentStateData(initializationVector, authTag, payload); //devolver bean em vez de json
     }
-
+    
     @SuppressWarnings("unused") //TODO compare transactionbean with notificationbean
-    private MbCheckoutResultBean getTransactionReportFromNotification(NotificationBean notificationBean) throws Exception {
-        SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2",
-                "OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==", "https://test.oppwa.com/v1", "25002", "EUR");
+    private TransactionReportBean getTransactionReportFromNotification(NotificationBean notificationBean) throws Exception {
+        SIBSInitializeServiceBean initializeServiceBean =
+                new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2", "https://test.oppwa.com/v1", "25002", "EUR");
+        initializeServiceBean.setBearerToken("OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==");
         SIBSOnlinePaymentsGatewayService applicationClient =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
-        String transactionId = applicationClient.getNotificationMerchantTransactionId(notificationBean);
+        String transactionId = notificationBean.getId();
         //assert beans iguais
-        MbCheckoutResultBean transactionReportBean = applicationClient.getMBPaymentTransactionReport(transactionId);
+        TransactionReportBean transactionReportBean = applicationClient.getPaymentTransactionReport(transactionId);
         return transactionReportBean;
     }
-
+    
     @SuppressWarnings("unused")
     private String getNotificationSummary(NotificationBean notificationBean) throws Exception {
-        SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2",
-                "OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==", "https://test.oppwa.com/v1", "25002", "EUR");
+        SIBSInitializeServiceBean initializeServiceBean =
+                new SIBSInitializeServiceBean("8a82941765aec5280165c86e8ba944f2", "https://test.oppwa.com/v1", "25002", "EUR");
+        initializeServiceBean.setBearerToken("OGE4Mjk0MTg1YjY3NDU1NTAxNWI3YzE5MjhlODE3MzZ8UnI0N2VRZXNkVw==");
         SIBSOnlinePaymentsGatewayService applicationClient =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
-        String sibsTransactionId = applicationClient.getNotificationSIBSTransactionId(notificationBean);
-        String merchantTransactionId = applicationClient.getNotificationMerchantTransactionId(notificationBean);
-        String notificationType = applicationClient.getNotificationType(notificationBean);
-        String notificationDescription = applicationClient.getNotificationResultDescription(notificationBean);
+        String sibsTransactionId = notificationBean.getId();
+        String merchantTransactionId = notificationBean.getMerchantTransactionId();
+        String notificationType = notificationBean.getType();
+        //String notificationDescription = notificationBean.getResult().getDescription();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.createObjectNode();
         ((ObjectNode) rootNode).put("NotificationType", notificationType);
-        ((ObjectNode) rootNode).put("NotificationDescription", notificationDescription);
+        //((ObjectNode) rootNode).put("NotificationDescription", notificationDescription);
         ((ObjectNode) rootNode).put("NotificationSIBSTransactionID", sibsTransactionId);
         ((ObjectNode) rootNode).put("NotificationCustomizedTransactionID", merchantTransactionId);
         String jsonNotificationSummary = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
         return jsonNotificationSummary;
-    }
+    }*/
 
 }

@@ -1,7 +1,6 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
-import org.fenixedu.onlinepaymentsgateway.sdk.PaymentBrand;
-import org.fenixedu.onlinepaymentsgateway.sdk.PaymentType;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +11,8 @@ public class PaymentStatusBean {
     private String merchantTransactionId;
     private String timestamp; //Date
 
-    private PaymentType paymentType;
-    private PaymentBrand paymentBrand;
+    private String paymentType;
+    private String paymentBrand;
     private String paymentAmount;
     private String paymentCurrency;
 
@@ -22,13 +21,14 @@ public class PaymentStatusBean {
 
     private String requestLog;
     private String responseLog;
-    private OnlinePaymentOperationResultType operationResultType;
+    private SibsResultCodeType operationResultType;
     private String operationResultDescription;
 
-    public PaymentStatusBean(String id, String merchantTransactionId, String timestamp, PaymentType paymentType,
-            PaymentBrand paymentBrand, String paymentAmount, String paymentCurrency, String paymentGatewayResultCode,
-            String paymentGatewayResultDescription, OnlinePaymentOperationResultType operationResultType,
-            String operationResultDescription) {
+    private Exception exception;
+
+    public PaymentStatusBean(String id, String merchantTransactionId, String timestamp, String paymentType, String paymentBrand,
+            String paymentAmount, String paymentCurrency, String paymentGatewayResultCode, String paymentGatewayResultDescription,
+            SibsResultCodeType operationResultType, String operationResultDescription) {
         super();
         this.id = id;
         this.merchantTransactionId = merchantTransactionId;
@@ -75,19 +75,19 @@ public class PaymentStatusBean {
         this.timestamp = timestamp;
     }
 
-    public PaymentType getPaymentType() {
+    public String getPaymentType() {
         return paymentType;
     }
 
-    public void setPaymentType(PaymentType paymentType) {
+    public void setPaymentType(String paymentType) {
         this.paymentType = paymentType;
     }
 
-    public PaymentBrand getPaymentBrand() {
+    public String getPaymentBrand() {
         return paymentBrand;
     }
 
-    public void setPaymentBrand(PaymentBrand paymentBrand) {
+    public void setPaymentBrand(String paymentBrand) {
         this.paymentBrand = paymentBrand;
     }
 
@@ -139,11 +139,11 @@ public class PaymentStatusBean {
         this.responseLog = responseLog;
     }
 
-    public OnlinePaymentOperationResultType getOperationResultType() {
+    public SibsResultCodeType getOperationResultType() {
         return operationResultType;
     }
 
-    public void setOperationResultType(OnlinePaymentOperationResultType operationResultType) {
+    public void setOperationResultType(SibsResultCodeType operationResultType) {
         this.operationResultType = operationResultType;
     }
 
@@ -153,6 +153,14 @@ public class PaymentStatusBean {
 
     public void setOperationResultDescription(String operationResultDescription) {
         this.operationResultDescription = operationResultDescription;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
+
+    public void setException(Exception exception) {
+        this.exception = exception;
     }
 
     @Override

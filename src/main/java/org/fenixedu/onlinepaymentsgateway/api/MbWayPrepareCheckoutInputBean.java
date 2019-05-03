@@ -2,40 +2,39 @@ package org.fenixedu.onlinepaymentsgateway.api;
 
 import java.math.BigDecimal;
 
-import org.joda.time.DateTime;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MbPrepareCheckoutInputBean {
+public class MbWayPrepareCheckoutInputBean {
     public BigDecimal amount;
     public String merchantTransactionId;
-    private DateTime sibsRefIntDate;
-    private DateTime sibsRefLmtDate;
+    public String phoneNumber;
 
-    public MbPrepareCheckoutInputBean(BigDecimal amount, String merchantTransactionId, DateTime sibsRefIntDate,
-            DateTime sibsRefLmtDate) {
+    public MbWayPrepareCheckoutInputBean(BigDecimal amount, String merchantTransactionId, String phoneNumber) {
         super();
         this.amount = amount;
         this.merchantTransactionId = merchantTransactionId;
-        this.sibsRefIntDate = sibsRefIntDate;
-        this.sibsRefLmtDate = sibsRefLmtDate;
+        this.phoneNumber = phoneNumber;
     }
 
-    public MbPrepareCheckoutInputBean(BigDecimal amount, DateTime sibsRefIntDate, DateTime sibsRefLmtDate) {
+    public MbWayPrepareCheckoutInputBean(BigDecimal amount, String phoneNumber) {
         super();
         this.amount = amount;
-        this.sibsRefIntDate = sibsRefIntDate;
-        this.sibsRefLmtDate = sibsRefLmtDate;
+        this.phoneNumber = phoneNumber;
     }
 
-    public MbPrepareCheckoutInputBean() {
+    public MbWayPrepareCheckoutInputBean() {
     }
 
-    public boolean isPropertiesValid() {
+    public boolean isAmountValid() {
         boolean returnValue = true;
         returnValue &= this.amount != null && getAmount().compareTo(BigDecimal.ZERO) > 0;
-        returnValue &= sibsRefIntDate != null && sibsRefLmtDate != null && sibsRefIntDate.isBefore(sibsRefLmtDate);
+        return returnValue;
+    }
+
+    public boolean isNumberValid() {
+        boolean returnValue = true;
+        returnValue &= phoneNumber != null && phoneNumber.matches("^351[#]\\d{9}$");
         return returnValue;
     }
 
@@ -55,20 +54,12 @@ public class MbPrepareCheckoutInputBean {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getSibsRefIntDate() {
-        return sibsRefIntDate.toString();
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setSibsRefIntDate(DateTime sibsRefIntDate) {
-        this.sibsRefIntDate = sibsRefIntDate;
-    }
-
-    public String getSibsRefLmtDate() {
-        return sibsRefLmtDate.toString();
-    }
-
-    public void setSibsRefLmtDate(DateTime sibsRefLmtDate) {
-        this.sibsRefLmtDate = sibsRefLmtDate;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override

@@ -1,18 +1,19 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class CustomerDataInputBean {
 
     private String customerIp;
     private String customerSurname;
     private String customerGivenName;
-    private String customerCountry;
 
-    public CustomerDataInputBean(String customerIp, String customerSurname, String customerGivenName, String customerCountry) {
+    public CustomerDataInputBean(String customerIp, String customerSurname, String customerGivenName) {
         super();
         this.customerIp = customerIp;
         this.customerSurname = customerSurname;
         this.customerGivenName = customerGivenName;
-        this.customerCountry = customerCountry;
     }
 
     public CustomerDataInputBean() {
@@ -42,12 +43,15 @@ public class CustomerDataInputBean {
         this.customerGivenName = givenName;
     }
 
-    public String getCountry() {
-        return customerCountry;
+    @Override
+    public String toString() {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "";
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
-
-    public void setCountry(String country) {
-        this.customerCountry = country;
-    }
-
 }

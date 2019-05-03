@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MbCheckoutResultBean {
+public class MbWayCheckoutResultBean {
 
     private String id;
     private String merchantTransactionId;
@@ -19,10 +19,8 @@ public class MbCheckoutResultBean {
     private String currency;
     private PaymentBrand paymentBrand;
     private PaymentType paymentType;
-    private String paymentEntity;
-    private String paymentReference;
-    private String paymentRefInitialDate;
-    private String paymentRefLimitDate;
+    private String phoneNumber;
+    private String acquirerResponse;
 
     private String paymentGatewayResultCode;
     private String paymentGatewayResultDescription;
@@ -35,10 +33,10 @@ public class MbCheckoutResultBean {
 
     private Exception exception;
 
-    public MbCheckoutResultBean(String id, String merchantTransactionId, String timestamp, String amount, String currency,
-            String paymentBrand, String paymentType, String paymentEntity, String paymentReference, String paymentRefInitialDate,
-            String paymentRefLimitDate, SibsResultCodeType operationResultType, String operationResultDescription,
-            String resultCode, String resultDescription) {
+    public MbWayCheckoutResultBean(String id, String merchantTransactionId, String timestamp, String amount, String currency,
+            String paymentBrand, String paymentType, String phoneNumber, String acquirerResponse,
+            SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
+            String resultDescription) {
         super();
         this.id = id;
         this.merchantTransactionId = merchantTransactionId;
@@ -47,17 +45,15 @@ public class MbCheckoutResultBean {
         this.currency = currency;
         this.paymentBrand = PaymentBrand.valueOf(paymentBrand);
         this.paymentType = PaymentType.valueOf(paymentType);
-        this.paymentEntity = paymentEntity;
-        this.paymentReference = paymentReference;
-        this.paymentRefInitialDate = paymentRefInitialDate;
-        this.paymentRefLimitDate = paymentRefLimitDate;
+        this.phoneNumber = phoneNumber;
+        this.acquirerResponse = acquirerResponse;
         this.operationResultType = operationResultType;
         this.operationResultDescription = operationResultDescription;
         this.paymentGatewayResultCode = resultCode;
         this.paymentGatewayResultDescription = resultDescription;
     }
 
-    public MbCheckoutResultBean() {
+    public MbWayCheckoutResultBean() {
         super();
     }
 
@@ -130,20 +126,20 @@ public class MbCheckoutResultBean {
         this.paymentType = PaymentType.valueOf(paymentType);
     }
 
-    public String getPaymentEntity() {
-        return paymentEntity;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPaymentEntity(String paymentEntity) {
-        this.paymentEntity = paymentEntity;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getPaymentReference() {
-        return paymentReference;
+    public String getAcquirerResponse() {
+        return acquirerResponse;
     }
 
-    public void setPaymentReference(String paymentReference) {
-        this.paymentReference = paymentReference;
+    public void setAcquirerResponse(String acquirerResponse) {
+        this.acquirerResponse = acquirerResponse;
     }
 
     public String getPaymentGatewayResultDescription() {
@@ -152,22 +148,6 @@ public class MbCheckoutResultBean {
 
     public void setPaymentGatewayResultDescription(String paymentGatewayResultDescription) {
         this.paymentGatewayResultDescription = paymentGatewayResultDescription;
-    }
-
-    public String getPaymentRefInitialDate() {
-        return paymentRefInitialDate;
-    }
-
-    public void setPaymentRefInitialDate(String paymentRefInitialDate) {
-        this.paymentRefInitialDate = paymentRefInitialDate;
-    }
-
-    public String getPaymentRefLimitDate() {
-        return paymentRefLimitDate;
-    }
-
-    public void setPaymentRefLimitDate(String paymentRefLimitDate) {
-        this.paymentRefLimitDate = paymentRefLimitDate;
     }
 
     public String getPaymentGatewayResultCode() {

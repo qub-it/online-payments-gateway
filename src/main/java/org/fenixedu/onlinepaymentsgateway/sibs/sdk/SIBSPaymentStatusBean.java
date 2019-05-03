@@ -1,6 +1,7 @@
-package org.fenixedu.onlinepaymentsgateway.sdk;
+package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "id", "paymentType", "paymentBrand", "amount", "currency", "descriptor", "merchantTransactionId", "result",
@@ -146,17 +149,79 @@ public class SIBSPaymentStatusBean {
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonPropertyOrder({ "code", "description" })
+    @JsonPropertyOrder({ "code", "description", "parameterErrors" })
     public static class Result {
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @JsonPropertyOrder({ "name", "value", "message" })
+        public static class ParameterError {
+
+            @JsonProperty("name")
+            private String name;
+            @JsonProperty("value")
+            private String value;
+            @JsonProperty("message")
+            private String message;
+            @JsonIgnore
+            private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+            public ParameterError() {
+                super();
+            }
+
+            @JsonProperty("name")
+            public String getName() {
+                return name;
+            }
+
+            @JsonProperty("name")
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            @JsonProperty("value")
+            public String getValue() {
+                return value;
+            }
+
+            @JsonProperty("value")
+            public void setValue(String value) {
+                this.value = value;
+            }
+
+            @JsonProperty("message")
+            public String getMessage() {
+                return message;
+            }
+
+            @JsonProperty("message")
+            public void setMessage(String message) {
+                this.message = message;
+            }
+
+            @JsonAnyGetter
+            public Map<String, Object> getAdditionalProperties() {
+                return this.additionalProperties;
+            }
+
+            @JsonAnySetter
+            public void setAdditionalProperty(String name, Object value) {
+                this.additionalProperties.put(name, value);
+            }
+
+        }
 
         @JsonProperty("code")
         private String code;
         @JsonProperty("description")
         private String description;
+        @JsonProperty("parameterErrors")
+        private List<ParameterError> parameterErrors;
         @JsonIgnore
         private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
         public Result() {
+            super();
         }
 
         @JsonProperty("code")
@@ -179,6 +244,16 @@ public class SIBSPaymentStatusBean {
             this.description = description;
         }
 
+        @JsonProperty("parameterErrors")
+        public List<ParameterError> getParameterErrors() {
+            return parameterErrors;
+        }
+
+        @JsonProperty("parameterErrors")
+        public void setParameterErrors(List<ParameterError> parameterErrors) {
+            this.parameterErrors = parameterErrors;
+        }
+
         @JsonAnyGetter
         public Map<String, Object> getAdditionalProperties() {
             return this.additionalProperties;
@@ -187,6 +262,18 @@ public class SIBSPaymentStatusBean {
         @JsonAnySetter
         public void setAdditionalProperty(String name, Object value) {
             this.additionalProperties.put(name, value);
+        }
+
+        @Override
+        public String toString() {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return json;
         }
 
     }
@@ -452,4 +539,15 @@ public class SIBSPaymentStatusBean {
         this.additionalProperties.put(name, value);
     }
 
+    @Override
+    public String toString() {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "";
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
 }

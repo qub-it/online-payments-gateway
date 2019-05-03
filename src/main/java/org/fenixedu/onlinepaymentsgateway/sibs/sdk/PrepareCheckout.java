@@ -1,4 +1,4 @@
-package org.fenixedu.onlinepaymentsgateway.sdk;
+package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -12,15 +12,22 @@ public class PrepareCheckout {
     private String currency;
     private PaymentType paymentType;
     private String merchantTransactionId;
-    private String shopperResultUrl;
+    private String SIBSMULTIBANCO_PtmntEntty;
+    private String SIBSMULTIBANCO_RefIntlDtTm;
+    private String SIBSMULTIBANCO_RefLmtDtTm;
+    private String billingCountry;
 
-    public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String merchantTransactionId) {
+    public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String sIBSMULTIBANCO_PtmntEntty,
+            String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm, String billingCountry) {
         super();
         this.entityId = entityId;
         this.amount = amount;
         this.currency = currency;
         this.paymentType = PaymentType.valueOf(paymentType);
-        this.merchantTransactionId = merchantTransactionId;
+        this.SIBSMULTIBANCO_PtmntEntty = sIBSMULTIBANCO_PtmntEntty;
+        this.SIBSMULTIBANCO_RefIntlDtTm = sIBSMULTIBANCO_RefIntlDtTm;
+        this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
+        this.billingCountry = billingCountry;
     }
 
     public PrepareCheckout() {
@@ -66,12 +73,36 @@ public class PrepareCheckout {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getShopperResultUrl() {
-        return shopperResultUrl;
+    public String getSIBSMULTIBANCO_PtmntEntty() {
+        return SIBSMULTIBANCO_PtmntEntty;
     }
 
-    public void setShopperResultUrl(String shopperResultUrl) {
-        this.shopperResultUrl = shopperResultUrl;
+    public void setSIBSMULTIBANCO_PtmntEntty(String sIBSMULTIBANCO_PtmntEntty) {
+        this.SIBSMULTIBANCO_PtmntEntty = sIBSMULTIBANCO_PtmntEntty;
+    }
+
+    public String getSIBSMULTIBANCO_RefIntlDtTm() {
+        return SIBSMULTIBANCO_RefIntlDtTm;
+    }
+
+    public void setSIBSMULTIBANCO_RefIntlDtTm(String sIBSMULTIBANCO_RefIntlDtTm) {
+        this.SIBSMULTIBANCO_RefIntlDtTm = sIBSMULTIBANCO_RefIntlDtTm;
+    }
+
+    public String getSIBSMULTIBANCO_RefLmtDtTm() {
+        return SIBSMULTIBANCO_RefLmtDtTm;
+    }
+
+    public void setSIBSMULTIBANCO_RefLmtDtTm(String sIBSMULTIBANCO_RefLmtDtTm) {
+        this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
+    }
+
+    public String getBillingCountry() {
+        return billingCountry;
+    }
+
+    public void setBillingCountry(String billingCountry) {
+        this.billingCountry = billingCountry;
     }
 
     public MultivaluedMap<String, String> asMap() {
@@ -80,8 +111,13 @@ public class PrepareCheckout {
         form.add("amount", amount);
         form.add("currency", currency);
         form.add("paymentType", paymentType.toString());
-        form.add("merchantTransactionId", merchantTransactionId);
-        form.add("shopperResultUrl", shopperResultUrl);
+        /*form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
+        form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
+        form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
+        form.add("billing.country", billingCountry);*/
+        if (merchantTransactionId != null) {
+            form.add("merchantTransactionId", merchantTransactionId);
+        }
         return form;
     }
 

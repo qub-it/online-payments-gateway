@@ -2,7 +2,7 @@
  * No longer used, updated authentication with HTTP auth token
  */
 
-package org.fenixedu.onlinepaymentsgateway.sdk;
+package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;

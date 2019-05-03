@@ -8,7 +8,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
-import org.fenixedu.onlinepaymentsgateway.sdk.NotificationBean;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,6 +81,7 @@ public class Decryption {
 
     public NotificationBean handleNotification(String jsonPayload) {
         ObjectMapper mapper = new ObjectMapper();
+        //TODO superclasse esta trocada, nao usar hierarquia
         NotificationBean notificationPayload = null;
         try {
             notificationPayload = mapper.readValue(jsonPayload, NotificationBean.class);

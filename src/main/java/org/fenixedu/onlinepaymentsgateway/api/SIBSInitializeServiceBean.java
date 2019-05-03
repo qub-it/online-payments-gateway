@@ -1,5 +1,8 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SIBSInitializeServiceBean {
 
     private String entityId;
@@ -12,20 +15,17 @@ public class SIBSInitializeServiceBean {
 
     private String aesKey;
 
-    public SIBSInitializeServiceBean(String entityId, String bearerToken, String endpointUrl, String paymentEntity,
-            String paymentCurrency) {
+    public SIBSInitializeServiceBean(String entityId, String endpointUrl, String paymentEntity, String paymentCurrency) {
         super();
         this.entityId = entityId;
-        this.bearerToken = bearerToken;
         this.endpointUrl = endpointUrl;
         this.paymentEntity = paymentEntity;
         this.paymentCurrency = paymentCurrency;
     }
 
-    public SIBSInitializeServiceBean(String entityId, String bearerToken, String aesKey) {
+    public SIBSInitializeServiceBean(String entityId, String aesKey) {
         super();
         this.entityId = entityId;
-        this.bearerToken = bearerToken;
         this.aesKey = aesKey;
     }
 
@@ -41,7 +41,6 @@ public class SIBSInitializeServiceBean {
 
     public boolean isPaymentPropertiesValid() {
         boolean returnValue = true;
-        returnValue &= endpointUrl != null && !endpointUrl.isEmpty();
         returnValue &= paymentEntity != null && !paymentEntity.isEmpty();
         returnValue &= paymentCurrency != null && !paymentCurrency.isEmpty();
         return returnValue;
@@ -101,4 +100,15 @@ public class SIBSInitializeServiceBean {
         this.aesKey = aesKey;
     }
 
+    @Override
+    public String toString() {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "";
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
 }
