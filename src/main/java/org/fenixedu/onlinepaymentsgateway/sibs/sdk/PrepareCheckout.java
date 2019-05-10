@@ -111,10 +111,13 @@ public class PrepareCheckout {
         form.add("amount", amount);
         form.add("currency", currency);
         form.add("paymentType", paymentType.toString());
-        /*form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
+        form.add("testMode", "EXTERNAL");
+        form.add("customParameters[SIBS_ENV]", "QLY");
+
+        form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
         form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
-        form.add("billing.country", billingCountry);*/
+        form.add("billing.country", billingCountry);
         if (merchantTransactionId != null) {
             form.add("merchantTransactionId", merchantTransactionId);
         }

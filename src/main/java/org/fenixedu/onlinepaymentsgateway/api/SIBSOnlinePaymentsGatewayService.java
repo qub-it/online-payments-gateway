@@ -1,9 +1,14 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +54,7 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
+    //server-to-server mb
     public MbCheckoutResultBean mbPrepareCheckout(MbPrepareCheckoutInputBean mbPrepareCheckoutInputBean,
             CustomerDataInputBean customerInputBean) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -58,7 +64,7 @@ public class SIBSOnlinePaymentsGatewayService {
             throw new IllegalArgumentException("Invalid Service payment settings");
         }
         if (mbPrepareCheckoutInputBean == null || !mbPrepareCheckoutInputBean.isPropertiesValid()) {
-            throw new IllegalArgumentException("Invalid Payment input");
+            throw new IllegalArgumentException("Invalid Amount or Dates");
         }
         if (mbPrepareCheckoutInputBean.getAmount().scale() > 2) {
             throw new IllegalArgumentException("Invalid Amount, Amount.scale() <= 2");
@@ -149,6 +155,7 @@ public class SIBSOnlinePaymentsGatewayService {
 
     }
 
+    //server-to-server mbway
     public MbWayCheckoutResultBean mbwayPrepareCheckout(MbWayPrepareCheckoutInputBean mbwayPrepareCheckoutInputBean,
             CustomerDataInputBean customerInputBean) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -291,7 +298,7 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //For CC use: 4188 5300 0999 2951     08/19       092
+    //copyandpay For CC use: 4188 5300 0999 2951     08/19       092
     public CheckoutResultBean prepareCheckout(PrepareCheckoutInputBean prepareCheckoutInputBean) {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
@@ -462,10 +469,19 @@ public class SIBSOnlinePaymentsGatewayService {
         //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
         //handle das varias opções, notification bean geral + notificationbean especificos
         //Incluir o tipo de resposta a dar de volta(codigo 200 ou 500)
+        logger = customLogger();
+        logger.info("Request encrypted: " + encryptedPayload.toString());
+
         Decryption notification =
                 new Decryption(this.initializeServiceBean.getAesKey(), initializationVector, authTag, encryptedPayload);
+
+        String decryptedPayload = notification.decryptPayload();
+        logger.info("Request desencrypted: " + decryptedPayload);
         //validate result with OnlinePaymentOperationResultType && validateSibsResult
-        return notification.handleNotification(notification.decryptPayload());
+        NotificationBean payload = notification.handleNotification(decryptedPayload);
+        logger.info("Payload content: " + payload.toString());
+        return payload;
+
     }
 
     public NotificationBean handleNotificationServletRequest(HttpServletRequest httpServletRequest) throws Exception {
@@ -475,6 +491,10 @@ public class SIBSOnlinePaymentsGatewayService {
 
         //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
         //handle das varias opções, notification bean geral + notificationbean especificos
+        logger = customLogger();
+
+        logger.info("Request: " + httpServletRequest.toString());
+
         String initializationVector = httpServletRequest.getHeader("X-Initialization-Vector");
         String authTag = httpServletRequest.getHeader("X-Authentication-Tag");
         String encryptedPayload = httpServletRequest.getReader().readLine();
@@ -482,7 +502,10 @@ public class SIBSOnlinePaymentsGatewayService {
         Decryption notification =
                 new Decryption(this.initializeServiceBean.getAesKey(), initializationVector, authTag, encryptedPayload);
         //validate result with OnlinePaymentOperationResultType && validateSibsResult
-        return notification.handleNotification(notification.decryptPayload());
+        NotificationBean payload = notification.handleNotification(notification.decryptPayload());
+
+        logger.info("Payload content: " + payload.toString());
+        return payload;
     }
 
     /*Content-Length: 2454
@@ -522,6 +545,18 @@ public class SIBSOnlinePaymentsGatewayService {
         ObjectMapper mapper = new ObjectMapper();
         T result = mapper.readValue(jsonPayload, clazz);
         return result;
+    }
+
+    private Logger customLogger() throws SecurityException, IOException {
+        SimpleDateFormat format = new SimpleDateFormat("M-d_HHmmss");
+        File logDir = new File("./logs/");
+        if (!(logDir.exists()))
+            logDir.mkdir();
+        FileHandler fh = new FileHandler("logs/webhook_log_" + format.format(Calendar.getInstance().getTime()) + ".log");
+        fh.setFormatter(new SimpleFormatter());
+        logger.addHandler(fh);
+        logger.setLevel(Level.INFO);
+        return logger;
     }
 
     public void closeClient() {

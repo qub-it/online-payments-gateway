@@ -139,8 +139,8 @@ public class PrepareMBCheckout {
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
         form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
         form.add("billing.country", billingCountry);
-        //form.add("testMode", "EXTERNAL");
-        //form.add("customParameters[SIBS_ENV]", "QLY");
+        form.add("testMode", "EXTERNAL");
+        form.add("customParameters[SIBS_ENV]", "QLY");
         if (merchantTransactionId != null) {
             form.add("merchantTransactionId", merchantTransactionId);
         }
