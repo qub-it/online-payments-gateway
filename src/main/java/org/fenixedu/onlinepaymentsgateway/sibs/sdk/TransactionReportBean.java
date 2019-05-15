@@ -1090,6 +1090,10 @@ public class TransactionReportBean {
         this.additionalProperties.put(name, value);
     }
 
+    public boolean isPaid() {
+        return true; //TODO
+    }
+
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();

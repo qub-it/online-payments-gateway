@@ -54,7 +54,7 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //server-to-server mb
+    //server-to-server mb TODO ispaid()
     public MbCheckoutResultBean mbPrepareCheckout(MbPrepareCheckoutInputBean mbPrepareCheckoutInputBean,
             CustomerDataInputBean customerInputBean) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -491,13 +491,6 @@ public class SIBSOnlinePaymentsGatewayService {
 
     public NotificationBean decodePaymentStateData(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
-        //Receber o httpservlet request (argumento do metodo) - criar um bean com os dados do header e do payload, listener vs callback
-        //handlenotification(servletrequest.getheader(Vetores)...
-        //Interface com handlers do lado aplicacional (handlepaymentMb ou handleError()
-
-        //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
-        //handle das varias opções, notification bean geral + notificationbean especificos
-        //Incluir o tipo de resposta a dar de volta(codigo 200 ou 500)
         logger = fileLogger("webhook");
         logger.info("Request encrypted: " + encryptedPayload.toString());
 

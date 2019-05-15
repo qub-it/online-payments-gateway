@@ -23,6 +23,10 @@ public class NotificationBean {
         super();
     }
 
+    public boolean isPaid() {
+        return true; //TODO
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonPropertyOrder({ "amount", "authentication", "billing", "currency", "customParameters", "customer", "descriptor", "id",
             "merchantAccountId", "merchantTransactionId", "ndc", "paymentBrand", "paymentType", "presentationAmount",

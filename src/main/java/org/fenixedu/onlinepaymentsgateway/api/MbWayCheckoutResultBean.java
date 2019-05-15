@@ -55,6 +55,10 @@ public class MbWayCheckoutResultBean {
         super();
     }
 
+    public boolean isPaid() {
+        return true; //TODO
+    }
+
     public boolean isOperationSuccess() {
         return this.operationResultType.isSuccess();
         //  "000.100.110".equals(this.sibsResultCode); //detalhe de comunicaçao deve tar no sdk.
