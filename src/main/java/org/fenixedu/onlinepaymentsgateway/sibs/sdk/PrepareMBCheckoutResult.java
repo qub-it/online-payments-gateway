@@ -7,7 +7,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -344,11 +343,13 @@ public class PrepareMBCheckoutResult {
         }
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Customer {
         private String givenName;
         private String surname;
         private String ip;
+        @JsonIgnore
+        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
         public Customer() {
         }
@@ -377,9 +378,26 @@ public class PrepareMBCheckoutResult {
             this.ip = ip;
         }
 
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+
         @Override
         public String toString() {
-            return "{givenName=" + givenName + ", surname=" + surname + ", ip=" + ip + "}";
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return json;
         }
 
     }
@@ -440,17 +458,13 @@ public class PrepareMBCheckoutResult {
             this.additionalProperties.put(name, value);
         }
 
-        @Override
-        public String toString() {
-            return "{sibsPaymentEntity=" + sibsPaymentEntity + ", sibsRefIntDate=" + sibsRefIntDate + ", sibsRefLmtDate="
-                    + sibsRefLmtDate + "}";
-        }
-
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Billing {
         private String country;
+        @JsonIgnore
+        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
         public Billing() {
         }
@@ -463,9 +477,14 @@ public class PrepareMBCheckoutResult {
             this.country = country;
         }
 
-        @Override
-        public String toString() {
-            return "{country=" + country + "}";
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
         }
 
     }

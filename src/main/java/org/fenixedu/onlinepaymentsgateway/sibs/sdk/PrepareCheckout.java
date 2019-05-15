@@ -30,6 +30,15 @@ public class PrepareCheckout {
         this.billingCountry = billingCountry;
     }
 
+    public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String billingCountry) {
+        super();
+        this.entityId = entityId;
+        this.amount = amount;
+        this.currency = currency;
+        this.paymentType = PaymentType.valueOf(paymentType);
+        this.billingCountry = billingCountry;
+    }
+
     public PrepareCheckout() {
     }
 

@@ -46,6 +46,14 @@ public class PrepareCheckoutInputBean {
         return returnValue;
     }
 
+    public boolean isMBPropertiesValid() {
+        boolean returnValue = true;
+        returnValue &= this.amount != null && getAmount().compareTo(BigDecimal.ZERO) > 0;
+        returnValue &= sibsRefIntDate != null && sibsRefLmtDate != null && sibsRefIntDate.isBefore(sibsRefLmtDate);
+        returnValue &= shopperResultUrl != null && !shopperResultUrl.isEmpty();
+        return returnValue;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }

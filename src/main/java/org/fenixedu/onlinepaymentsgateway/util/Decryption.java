@@ -1,6 +1,5 @@
 package org.fenixedu.onlinepaymentsgateway.util;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.crypto.Cipher;
@@ -8,10 +7,6 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
-import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Decryption {
 
@@ -79,21 +74,7 @@ public class Decryption {
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 
-    public NotificationBean handleNotification(String jsonPayload) {
-        ObjectMapper mapper = new ObjectMapper();
-        //TODO superclasse esta trocada, nao usar hierarquia
-        NotificationBean notificationPayload = null;
-        try {
-            notificationPayload = mapper.readValue(jsonPayload, NotificationBean.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return notificationPayload;
-    }
-
-    /*public MBNotificationBean handleMBNotification(NotificationBean notificationBean) {
+    /*TODO public MBNotificationBean handleMBNotification(NotificationBean notificationBean) {
         return null
     }*/
 

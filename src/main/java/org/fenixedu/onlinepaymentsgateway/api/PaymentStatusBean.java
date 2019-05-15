@@ -26,12 +26,11 @@ public class PaymentStatusBean {
 
     private Exception exception;
 
-    public PaymentStatusBean(String id, String merchantTransactionId, String timestamp, String paymentType, String paymentBrand,
-            String paymentAmount, String paymentCurrency, String paymentGatewayResultCode, String paymentGatewayResultDescription,
+    public PaymentStatusBean(String id, String timestamp, String paymentType, String paymentBrand, String paymentAmount,
+            String paymentCurrency, String paymentGatewayResultCode, String paymentGatewayResultDescription,
             SibsResultCodeType operationResultType, String operationResultDescription) {
         super();
         this.id = id;
-        this.merchantTransactionId = merchantTransactionId;
         this.timestamp = timestamp;
         this.paymentType = paymentType;
         this.paymentBrand = paymentBrand;

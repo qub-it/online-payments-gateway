@@ -33,13 +33,11 @@ public class MbWayCheckoutResultBean {
 
     private Exception exception;
 
-    public MbWayCheckoutResultBean(String id, String merchantTransactionId, String timestamp, String amount, String currency,
-            String paymentBrand, String paymentType, String phoneNumber, String acquirerResponse,
-            SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
-            String resultDescription) {
+    public MbWayCheckoutResultBean(String id, String timestamp, String amount, String currency, String paymentBrand,
+            String paymentType, String phoneNumber, String acquirerResponse, SibsResultCodeType operationResultType,
+            String operationResultDescription, String resultCode, String resultDescription) {
         super();
         this.id = id;
-        this.merchantTransactionId = merchantTransactionId;
         this.timestamp = timestamp;
         this.amount = amount;
         this.currency = currency;
