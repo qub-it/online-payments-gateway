@@ -31,11 +31,11 @@ import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBCheckout;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBCheckoutResult;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBWayCheckout;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBWayCheckoutResult;
-import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SIBSPaymentStatusBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.TransactionReportBean;
 import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.glassfish.jersey.logging.LoggingFeature;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,8 +54,8 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //server-to-server mb TODO ispaid()
-    public MbCheckoutResultBean mbPrepareCheckout(MbPrepareCheckoutInputBean mbPrepareCheckoutInputBean,
+    ////Create multibanco payment with server-to-server TODO ispaid() - generateMbpayment
+    public MbCheckoutResultBean generateMBPaymentReference(MbPrepareCheckoutInputBean mbPrepareCheckoutInputBean,
             CustomerDataInputBean customerInputBean) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
@@ -81,8 +81,8 @@ public class SIBSOnlinePaymentsGatewayService {
         final String billingCountry = "PT";
         final String paymentAmount = mbPrepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN).toString();
 
-        final String sibsRefIntDate = mbPrepareCheckoutInputBean.getSibsRefIntDate().toString();
-        final String sibsRefLmtDate = mbPrepareCheckoutInputBean.getSibsRefLmtDate().toString();
+        final String sibsRefIntDate = mbPrepareCheckoutInputBean.getSibsRefIntDate().toString(ISODateTimeFormat.dateTime());
+        final String sibsRefLmtDate = mbPrepareCheckoutInputBean.getSibsRefLmtDate().toString(ISODateTimeFormat.dateTime());
 
         final PrepareMBCheckout mbPrepCheckout = new PrepareMBCheckout(entityId, paymentAmount, paymentCurrency, paymentType,
                 paymentBrand, paymentEntity, sibsRefIntDate, sibsRefLmtDate, billingCountry, customerInputBean);
@@ -95,12 +95,13 @@ public class SIBSOnlinePaymentsGatewayService {
         //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         final String requestLog = mbPrepCheckout.toString();
         Form form = new Form(mbPrepCheckout.asMap());
-
+        String responseLog = null;
         Builder builder = target.request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
 
         //try { how to handle because can't have responseLog - how to handle httpbadrequest...
-        final String responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
+
         try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
             PrepareMBCheckoutResult result = customMapper(responseLog, PrepareMBCheckoutResult.class);
             SibsResultCodeType operationResultType = validateSibsResult(result.getResult().getCode());
             String operationResultDescription =
@@ -143,26 +144,14 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return mbCheckoutResult;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            MbCheckoutResultBean mbCheckoutResult = new MbCheckoutResultBean();
-            mbCheckoutResult.setRequestLog(requestLog);
-            mbCheckoutResult.setResponseLog(responseLog);
-            mbCheckoutResult.setException(e);
-            return mbCheckoutResult;
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
-        /*} catch (BadRequestException e) {
-            //how to handle because can't have responseLog - String.valueOf(result.getResult().getParameterErrors() != null) / paymentStatusBean.getResult().getParameterErrors().get(0).getMessage()
-            throw new OnlinePaymentsGatewayCommunicationException(requestLog, null, e);
-        } catch (WebApplicationException e) {
-            e.printStackTrace();
-            //throw new OnlinePaymentsGatewayCommunicationException(requestLog, null, e);
-        }*/
-
     }
 
-//server-to-server mbway
-    public MbWayCheckoutResultBean mbwayPrepareCheckout(MbWayPrepareCheckoutInputBean mbwayPrepareCheckoutInputBean,
+    //Create mbway payment with server-to-server
+    public MbWayCheckoutResultBean generateMbWayPayment(MbWayPrepareCheckoutInputBean mbwayPrepareCheckoutInputBean,
             CustomerDataInputBean customerInputBean) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
@@ -201,12 +190,12 @@ public class SIBSOnlinePaymentsGatewayService {
         //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         final String requestLog = mbwayPrepCheckout.toString();
         Form form = new Form(mbwayPrepCheckout.asMap());
-
+        String responseLog = null;
         Builder builder = target.request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
 
         //try { how to handle because can't have responseLog - how to handle httpbadrequest...
-        final String responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
         try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
             PrepareMBWayCheckoutResult result = customMapper(responseLog, PrepareMBWayCheckoutResult.class);
 
             String answerContainingPhoneNumber = result.getResultDetails().getConnectorTxID3();
@@ -249,24 +238,14 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return mbwayCheckoutResult;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            MbWayCheckoutResultBean mbwayCheckoutResult = new MbWayCheckoutResultBean();
-            mbwayCheckoutResult.setRequestLog(requestLog);
-            mbwayCheckoutResult.setResponseLog(responseLog);
-            mbwayCheckoutResult.setException(e);
-            return mbwayCheckoutResult;
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
-        /*} catch (BadRequestException e) {
-            //how to handle because can't have responseLog - String.valueOf(result.getResult().getParameterErrors() != null) / paymentStatusBean.getResult().getParameterErrors().get(0).getMessage()
-            throw new OnlinePaymentsGatewayCommunicationException(requestLog, null, e);
-        } catch (WebApplicationException e) {
-            e.printStackTrace();
-            //throw new OnlinePaymentsGatewayCommunicationException(requestLog, null, e);
-        }*/
 
     }
 
+    //Get transaction report from transaction ID
     public TransactionReportBean getPaymentTransactionReport(String transactionId)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -284,12 +263,14 @@ public class SIBSOnlinePaymentsGatewayService {
         final String requestLog =
                 "Entity Id = " + entityId + ", Authorization = " + bearerToken + ", Transaction Id = " + transactionId;
 
+        String responseLog = null;
+
         Builder builder = target.queryParam("entityId", entityId).request("application/x-www-form-urlencoded; charset=UTF-8")
                 .accept(MediaType.APPLICATION_JSON);
 
         //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
-        final String responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
         try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
             TransactionReportBean transactionReport = customMapper(responseLog, TransactionReportBean.class);
 
             SibsResultCodeType operationResultType = validateSibsResult(transactionReport.getResult().getCode());
@@ -310,18 +291,15 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return transactionReport;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            TransactionReportBean transactionReport = new TransactionReportBean();
-            transactionReport.setRequestLog(requestLog);
-            transactionReport.setResponseLog(responseLog);
-            transactionReport.setException(e);
-            return transactionReport;
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }
 
     //copyandpay For CC use: 4188 5300 0999 2951     08/19       092
-    public CheckoutResultBean prepareCheckout(PrepareCheckoutInputBean prepareCheckoutInputBean) {
+    public CheckoutResultBean prepareOnlinePaymentCheckout(PrepareCheckoutInputBean prepareCheckoutInputBean)
+            throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
         }
@@ -371,12 +349,13 @@ public class SIBSOnlinePaymentsGatewayService {
 
         final String requestLog = prepCheckout.toString();
         Form form = new Form(prepCheckout.asMap());
-
+        String responseLog = null;
         Builder builder = target.request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
 
         //try { how to handle because can't have responseLog - how to handle httpbadrequest...
-        final String responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
         try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
+
             PrepareCheckoutResult result = customMapper(responseLog, PrepareCheckoutResult.class);
             SibsResultCodeType operationResultType = validateSibsResult(result.getResult().getCode());
             String operationResultDescription =
@@ -406,18 +385,14 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return checkoutResult;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            CheckoutResultBean checkoutResult = new CheckoutResultBean();
-            checkoutResult.setRequestLog(requestLog);
-            checkoutResult.setResponseLog(responseLog);
-            checkoutResult.setException(e);
-            return checkoutResult;
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
 
     }
 
-    public PaymentFormBean createPaymentForm(CheckoutResultBean checkoutResultBean) throws Exception {
+    public PaymentFormBean createOnlinePaymentForm(CheckoutResultBean checkoutResultBean) throws Exception {
         //assert (checkoutResultBean != null);
         String endpointUrl = initializeServiceBean.getEndpointUrl();
         String checkoutId = checkoutResultBean.getId();
@@ -433,7 +408,7 @@ public class SIBSOnlinePaymentsGatewayService {
         return paymentForm;
     }
 
-    //TODO deve ser utilizado como callback quando redirect ao shopperResultUrl
+    //TODO deve ser utilizado como callback quando redirect ao shopperResultUrl / Refactor do Bean para funcionar no transactionReport
     public PaymentStatusBean getPaymentStatus(String checkoutId) throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
@@ -454,9 +429,10 @@ public class SIBSOnlinePaymentsGatewayService {
                 "Entity Id = " + entityId + ", Authorization = " + bearerToken + ", Checkout Id = " + checkoutId;
 
         //try { how to handle because can't have responseLog - how to handle httpbadrequest..
-        final String responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
+        String responseLog = null;
         try {
-            SIBSPaymentStatusBean result = customMapper(responseLog, SIBSPaymentStatusBean.class);
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
+            TransactionReportBean result = customMapper(responseLog, TransactionReportBean.class);
             SibsResultCodeType operationResultType = validateSibsResult(result.getResult().getCode());
             String operationResultDescription =
                     operationResultDescription(result.getResult().getDescription(), operationResultType);
@@ -474,36 +450,35 @@ public class SIBSOnlinePaymentsGatewayService {
             if (result.getMerchantTransactionId() != null) {
                 paymentStatusBean.setMerchantTransactionId(result.getMerchantTransactionId());
             }
-
             return paymentStatusBean;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            PaymentStatusBean paymentStatusBean = new PaymentStatusBean();
-            paymentStatusBean.setRequestLog(requestLog);
-            paymentStatusBean.setResponseLog(responseLog);
-            paymentStatusBean.setException(e);
-            return paymentStatusBean;
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }
 
-    //TODO estado de pagamento (isPaid(boolean) e outros estados para apps)
-
-    public NotificationBean decodePaymentStateData(String initializationVector, String authTag, String encryptedPayload)
+    //TODO estado de pagamento (isPaid(boolean) e outros estados para apps) - Juntar ao paymentstatusbean/transactionReport
+    public NotificationBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
-        logger = fileLogger("webhook");
+        logger = fileLogger("webhookLive");
         logger.info("Request encrypted: " + encryptedPayload.toString());
+        String decryptedPayload = null;
+        try {
+            Decryption notification =
+                    new Decryption(this.initializeServiceBean.getAesKey(), initializationVector, authTag, encryptedPayload);
 
-        Decryption notification =
-                new Decryption(this.initializeServiceBean.getAesKey(), initializationVector, authTag, encryptedPayload);
+            decryptedPayload = notification.decryptPayload();
+            logger.info("\n Request desencrypted: " + decryptedPayload);
 
-        String decryptedPayload = notification.decryptPayload();
-        logger.info("Request desencrypted: " + decryptedPayload);
+            //TODO validate result with OnlinePaymentOperationResultType && validateSibsResult
+            NotificationBean payload = customMapper(decryptedPayload, NotificationBean.class);
+            logger.info("\n Payload content: " + payload.toString());
 
-        //TODO validate result with OnlinePaymentOperationResultType && validateSibsResult
-        NotificationBean payload = customMapper(decryptedPayload, NotificationBean.class);
-        logger.info("Payload content: " + payload.toString());
-        return payload;
+            return payload;
+        } catch (Exception e) {
+            throw new OnlinePaymentsGatewayCommunicationException(null, decryptedPayload, e);
+        }
 
     }
 
@@ -514,21 +489,14 @@ public class SIBSOnlinePaymentsGatewayService {
 
         //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
         //handle das varias opções, notification bean geral + notificationbean especificos
-        logger = fileLogger("webhook");
+        logger = fileLogger("webhookLive");
         logger.info("Request: " + httpServletRequest.toString());
 
         String initializationVector = httpServletRequest.getHeader("X-Initialization-Vector");
         String authTag = httpServletRequest.getHeader("X-Authentication-Tag");
         String encryptedPayload = httpServletRequest.getReader().readLine();
 
-        Decryption notification =
-                new Decryption(this.initializeServiceBean.getAesKey(), initializationVector, authTag, encryptedPayload);
-
-        String decryptedPayload = notification.decryptPayload();
-
-        //TODO validate result with OnlinePaymentOperationResultType && validateSibsResult
-        NotificationBean payload = customMapper(decryptedPayload, NotificationBean.class);
-        logger.info("Payload content: " + payload.toString());
+        NotificationBean payload = handleNotificationRequest(initializationVector, authTag, encryptedPayload);
         return payload;
     }
 
@@ -571,12 +539,12 @@ public class SIBSOnlinePaymentsGatewayService {
         return result;
     }
 
-    private Logger fileLogger(String folderName) throws SecurityException, IOException {
+    private Logger fileLogger(String fileName) throws SecurityException, IOException {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss.SSS");
         File logDir = new File("./logs/");
         if (!(logDir.exists()))
             logDir.mkdir();
-        FileHandler fh = new FileHandler("logs/" + folderName + "_" + format.format(Calendar.getInstance().getTime()) + ".log");
+        FileHandler fh = new FileHandler("logs/" + fileName + "_" + format.format(Calendar.getInstance().getTime()) + ".log");
         fh.setFormatter(new SimpleFormatter());
         logger.addHandler(fh);
         logger.setLevel(Level.INFO);

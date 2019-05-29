@@ -46,7 +46,7 @@ public class PaymentStatusBean {
     }
 
     public boolean isPaid() {
-        return true; //TODO
+        return this.operationResultType.isPaid();
     }
 
     public boolean isOperationSuccess() {

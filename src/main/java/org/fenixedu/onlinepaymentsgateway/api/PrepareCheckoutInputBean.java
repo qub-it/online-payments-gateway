@@ -27,13 +27,11 @@ public class PrepareCheckoutInputBean {
         this.sibsRefLmtDate = sibsRefLmtDate;
     }
 
-    public PrepareCheckoutInputBean(BigDecimal amount, String shopperResultUrl, DateTime sibsRefIntDate,
-            DateTime sibsRefLmtDate) {
+    public PrepareCheckoutInputBean(BigDecimal amount, String merchantTransactionId, String shopperResultUrl) {
         super();
         this.amount = amount;
+        this.merchantTransactionId = merchantTransactionId;
         this.shopperResultUrl = shopperResultUrl;
-        this.sibsRefIntDate = sibsRefIntDate;
-        this.sibsRefLmtDate = sibsRefLmtDate;
     }
 
     public PrepareCheckoutInputBean() {

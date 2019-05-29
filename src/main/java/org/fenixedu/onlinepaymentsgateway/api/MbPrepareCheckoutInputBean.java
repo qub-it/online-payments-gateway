@@ -55,16 +55,16 @@ public class MbPrepareCheckoutInputBean {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getSibsRefIntDate() {
-        return sibsRefIntDate.toString();
+    public DateTime getSibsRefIntDate() {
+        return sibsRefIntDate;
     }
 
     public void setSibsRefIntDate(DateTime sibsRefIntDate) {
         this.sibsRefIntDate = sibsRefIntDate;
     }
 
-    public String getSibsRefLmtDate() {
-        return sibsRefLmtDate.toString();
+    public DateTime getSibsRefLmtDate() {
+        return sibsRefLmtDate;
     }
 
     public void setSibsRefLmtDate(DateTime sibsRefLmtDate) {

@@ -62,7 +62,7 @@ public class MbCheckoutResultBean {
     }
 
     public boolean isPaid() {
-        return true; //TODO
+        return this.operationResultType.isPaid();
     }
 
     public boolean isOperationSuccess() {

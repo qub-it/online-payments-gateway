@@ -120,8 +120,8 @@ public class PrepareCheckout {
         form.add("amount", amount);
         form.add("currency", currency);
         form.add("paymentType", paymentType.toString());
-        form.add("testMode", "EXTERNAL");
-        form.add("customParameters[SIBS_ENV]", "QLY");
+        /*form.add("testMode", "EXTERNAL");
+        form.add("customParameters[SIBS_ENV]", "QLY");*/
 
         form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
