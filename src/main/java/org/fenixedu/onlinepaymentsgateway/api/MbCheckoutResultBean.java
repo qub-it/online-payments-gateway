@@ -1,5 +1,7 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import java.math.BigDecimal;
+
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
@@ -15,7 +17,7 @@ public class MbCheckoutResultBean {
     private String merchantTransactionId;
     private String timestamp; //Date
 
-    private String amount;
+    private BigDecimal amount;
     private String currency;
     private PaymentBrand paymentBrand;
     private PaymentType paymentType;
@@ -43,7 +45,7 @@ public class MbCheckoutResultBean {
         this.id = id;
         this.merchantTransactionId = merchantTransactionId;
         this.timestamp = timestamp;
-        this.amount = amount;
+        this.amount = new BigDecimal(amount);
         this.currency = currency;
         this.paymentBrand = PaymentBrand.valueOf(paymentBrand);
         this.paymentType = PaymentType.valueOf(paymentType);
@@ -62,7 +64,7 @@ public class MbCheckoutResultBean {
     }
 
     public boolean isPaid() {
-        return this.operationResultType.isPaid();
+        return false;
     }
 
     public boolean isOperationSuccess() {
@@ -101,11 +103,11 @@ public class MbCheckoutResultBean {
         this.timestamp = timestamp;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

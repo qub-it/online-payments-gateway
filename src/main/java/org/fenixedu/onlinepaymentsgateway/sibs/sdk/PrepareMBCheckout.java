@@ -21,9 +21,11 @@ public class PrepareMBCheckout {
     private String SIBSMULTIBANCO_RefLmtDtTm;
     private String billingCountry;
 
+    private SibsEnvironmentMode environmentMode;
+
     public PrepareMBCheckout(String entityId, String amount, String currency, String paymentType, String paymentBrand,
             String sIBSMULTIBANCO_PtmntEntty, String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm,
-            String billingCountry, CustomerDataInputBean customerInput) {
+            String billingCountry, CustomerDataInputBean customerInput, SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
         this.amount = amount;
@@ -35,6 +37,7 @@ public class PrepareMBCheckout {
         this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
         this.billingCountry = billingCountry;
         this.customerInput = customerInput;
+        this.environmentMode = environmentMode;
     }
 
     public PrepareMBCheckout() {
@@ -128,10 +131,18 @@ public class PrepareMBCheckout {
         this.billingCountry = billingCountry;
     }
 
+    public SibsEnvironmentMode getEnvironmentMode() {
+        return environmentMode;
+    }
+
+    public void setEnvironmentMode(SibsEnvironmentMode environmentMode) {
+        this.environmentMode = environmentMode;
+    }
+
     public MultivaluedMap<String, String> asMap() {
         MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
         form.add("entityId", entityId);
-        form.add("amount", amount);
+        form.add("amount", amount.toString());
         form.add("currency", currency);
         form.add("paymentType", paymentType.toString());
         form.add("paymentBrand", paymentBrand.toString());
@@ -139,8 +150,17 @@ public class PrepareMBCheckout {
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
         form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
         form.add("billing.country", billingCountry);
-        form.add("testMode", "EXTERNAL");
-        form.add("customParameters[SIBS_ENV]", "QLY");
+        if (environmentMode == SibsEnvironmentMode.TEST_MODE_EXTERNAL) {
+            form.add("testMode", "EXTERNAL");
+            form.add("customParameters[SIBS_ENV]", "QLY");
+        } else if (environmentMode == SibsEnvironmentMode.TEST_MODE_INTERNAL) {
+            form.add("testMode", "INTERNAL");
+            form.add("customParameters[SIBS_ENV]", "QLY");
+        } else if (environmentMode == SibsEnvironmentMode.PRODUCTION) {
+
+        } else {
+            throw new RuntimeException("Unknow environment mode.");
+        }
         if (merchantTransactionId != null) {
             form.add("merchantTransactionId", merchantTransactionId);
         }

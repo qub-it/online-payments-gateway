@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean.BankAccount;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,44 +14,185 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "type", "payload" })
-public class NotificationBean {
-
-    public NotificationBean() {
-        super();
-    }
+@JsonPropertyOrder({ "result", "buildNumber", "timestamp", "ndc", "payments" })
+public class MerchantIdReportBean {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonPropertyOrder({ "amount", "authentication", "billing", "currency", "customParameters", "customer", "descriptor", "id",
-            "merchantAccountId", "merchantTransactionId", "ndc", "paymentBrand", "paymentType", "presentationAmount",
-            "presentationCurrency", "redirect", "referencedId", "result", "resultDetails", "risk", "timestamp" })
-    public static class Payload {
-
-        public Payload() {
-            super();
-        }
+    @JsonPropertyOrder({ "code", "description", "parameterErrors" })
+    public static class Result {
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonPropertyOrder({ "entityId" })
-        public static class Authentication {
+        @JsonPropertyOrder({ "name", "value", "message" })
+        public static class ParameterError {
 
-            @JsonProperty("entityId")
-            private String entityId;
+            @JsonProperty("name")
+            private String name;
+            @JsonProperty("value")
+            private String value;
+            @JsonProperty("message")
+            private String message;
             @JsonIgnore
             private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-            public Authentication() {
+            public ParameterError() {
                 super();
             }
 
-            @JsonProperty("entityId")
-            public String getEntityId() {
-                return entityId;
+            @JsonProperty("name")
+            public String getName() {
+                return name;
             }
 
-            @JsonProperty("entityId")
-            public void setEntityId(String entityId) {
-                this.entityId = entityId;
+            @JsonProperty("name")
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            @JsonProperty("value")
+            public String getValue() {
+                return value;
+            }
+
+            @JsonProperty("value")
+            public void setValue(String value) {
+                this.value = value;
+            }
+
+            @JsonProperty("message")
+            public String getMessage() {
+                return message;
+            }
+
+            @JsonProperty("message")
+            public void setMessage(String message) {
+                this.message = message;
+            }
+
+            @JsonAnyGetter
+            public Map<String, Object> getAdditionalProperties() {
+                return this.additionalProperties;
+            }
+
+            @JsonAnySetter
+            public void setAdditionalProperty(String name, Object value) {
+                this.additionalProperties.put(name, value);
+            }
+
+        }
+
+        @JsonProperty("code")
+        private String code;
+        @JsonProperty("description")
+        private String description;
+        @JsonProperty("parameterErrors")
+        private List<ParameterError> parameterErrors;
+        @JsonIgnore
+        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+        public Result() {
+            super();
+        }
+
+        @JsonProperty("code")
+        public String getCode() {
+            return code;
+        }
+
+        @JsonProperty("code")
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        @JsonProperty("description")
+        public String getDescription() {
+            return description;
+        }
+
+        @JsonProperty("description")
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        @JsonProperty("parameterErrors")
+        public List<ParameterError> getParameterErrors() {
+            return parameterErrors;
+        }
+
+        @JsonProperty("parameterErrors")
+        public void setParameterErrors(List<ParameterError> parameterErrors) {
+            this.parameterErrors = parameterErrors;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+
+        @Override
+        public String toString() {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return json;
+        }
+
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "id", "paymentType", "paymentBrand", "amount", "currency", "descriptor", "merchantTransactionId",
+            "result", "resultDetails", "merchant", "billing", "customParameters", "timestamp" })
+    public static class Payment {
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @JsonPropertyOrder({ "number", "bic", "country" })
+        public static class BankAccount {
+
+            @JsonProperty("number")
+            private String number;
+            @JsonProperty("bic")
+            private String bic;
+            @JsonProperty("country")
+            private String country;
+            @JsonIgnore
+            private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+            @JsonProperty("number")
+            public String getNumber() {
+                return number;
+            }
+
+            @JsonProperty("number")
+            public void setNumber(String number) {
+                this.number = number;
+            }
+
+            @JsonProperty("bic")
+            public String getBic() {
+                return bic;
+            }
+
+            @JsonProperty("bic")
+            public void setBic(String bic) {
+                this.bic = bic;
+            }
+
+            @JsonProperty("country")
+            public String getCountry() {
+                return country;
+            }
+
+            @JsonProperty("country")
+            public void setCountry(String country) {
+                this.country = country;
             }
 
             @JsonAnyGetter
@@ -76,10 +215,6 @@ public class NotificationBean {
             private String country;
             @JsonIgnore
             private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-            public Billing() {
-                super();
-            }
 
             @JsonProperty("country")
             public String getCountry() {
@@ -275,22 +410,19 @@ public class NotificationBean {
         }
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonPropertyOrder({ "givenName", "ip", "surname" })
+        @JsonPropertyOrder({ "givenName", "surname", "ip" })
         public static class Customer {
 
             @JsonProperty("givenName")
             private String givenName;
-            @JsonProperty("ip")
-            private String ip;
             @JsonProperty("surname")
             private String surname;
+            @JsonProperty("ip")
+            private String ip;
             @JsonIgnore
             private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-            public Customer() {
-                super();
-            }
-
+            @JsonProperty("givenName")
             public String getGivenName() {
                 return givenName;
             }
@@ -298,16 +430,6 @@ public class NotificationBean {
             @JsonProperty("givenName")
             public void setGivenName(String givenName) {
                 this.givenName = givenName;
-            }
-
-            @JsonProperty("ip")
-            public String getIp() {
-                return ip;
-            }
-
-            @JsonProperty("ip")
-            public void setIp(String ip) {
-                this.ip = ip;
             }
 
             @JsonProperty("surname")
@@ -320,38 +442,14 @@ public class NotificationBean {
                 this.surname = surname;
             }
 
-            @JsonAnyGetter
-            public Map<String, Object> getAdditionalProperties() {
-                return this.additionalProperties;
+            @JsonProperty("ip")
+            public String getIp() {
+                return ip;
             }
 
-            @JsonAnySetter
-            public void setAdditionalProperty(String name, Object value) {
-                this.additionalProperties.put(name, value);
-            }
-
-        }
-
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonPropertyOrder({ "parameters" })
-        public static class Redirect {
-
-            @JsonProperty("parameters")
-            private List<Object> parameters = null;
-            @JsonIgnore
-            private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-            public Redirect() {
-                super();
-            }
-
-            public List<Object> getParameters() {
-                return parameters;
-            }
-
-            @JsonProperty("parameters")
-            public void setParameters(List<Object> parameters) {
-                this.parameters = parameters;
+            @JsonProperty("ip")
+            public void setIp(String ip) {
+                this.ip = ip;
             }
 
             @JsonAnyGetter
@@ -735,10 +833,6 @@ public class NotificationBean {
             @JsonIgnore
             private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-            public Risk() {
-                super();
-            }
-
             @JsonProperty("score")
             public String getScore() {
                 return score;
@@ -823,127 +917,36 @@ public class NotificationBean {
 
         }
 
-        @JsonProperty("amount")
-        private String amount;
-        @JsonProperty("authentication")
-        private Authentication authentication;
-        @JsonProperty("billing")
-        private Billing billing;
-        @JsonProperty("card")
-        private Card card;
-        @JsonProperty("currency")
-        private String currency;
-        @JsonProperty("customParameters")
-        private CustomParameters customParameters;
-        @JsonProperty("customer")
-        private Customer customer;
-        @JsonProperty("descriptor")
-        private String descriptor;
         @JsonProperty("id")
         private String id;
-        @JsonProperty("merchant")
-        private Merchant merchant;
-        @JsonProperty("merchantAccountId")
-        private String merchantAccountId;
-        @JsonProperty("merchantTransactionId")
-        private String merchantTransactionId;
-        @JsonProperty("ndc")
-        private String ndc;
-        @JsonProperty("paymentBrand")
-        private String paymentBrand;
         @JsonProperty("paymentType")
         private String paymentType;
-        @JsonProperty("presentationAmount")
-        private String presentationAmount;
-        @JsonProperty("presentationCurrency")
-        private String presentationCurrency;
-        @JsonProperty("redirect")
-        private Redirect redirect;
-        @JsonProperty("referencedId")
-        private String referencedId;
+        @JsonProperty("paymentBrand")
+        private String paymentBrand;
+        @JsonProperty("amount")
+        private String amount;
+        @JsonProperty("currency")
+        private String currency;
+        @JsonProperty("descriptor")
+        private String descriptor;
+        @JsonProperty("merchantTransactionId")
+        private String merchantTransactionId;
         @JsonProperty("result")
         private Result result;
         @JsonProperty("resultDetails")
         private ResultDetails resultDetails;
-        @JsonProperty("risk")
-        private Risk risk;
+        @JsonProperty("merchant")
+        private Merchant merchant;
+        @JsonProperty("billing")
+        private Billing billing;
+        @JsonProperty("customParameters")
+        private CustomParameters customParameters;
         @JsonProperty("timestamp")
         private String timestamp;
-        @JsonProperty("threeDSecure")
-        private ThreeDSecure threeDSecure;
-        @JsonProperty("virtualAccount")
-        private VirtualAccount virtualAccount;
         @JsonIgnore
         private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-        @JsonProperty("amount")
-        public String getAmount() {
-            return amount;
-        }
-
-        @JsonProperty("amount")
-        public void setAmount(String amount) {
-            this.amount = amount;
-        }
-
-        @JsonProperty("authentication")
-        public Authentication getAuthentication() {
-            return authentication;
-        }
-
-        @JsonProperty("authentication")
-        public void setAuthentication(Authentication authentication) {
-            this.authentication = authentication;
-        }
-
-        @JsonProperty("billing")
-        public Billing getBilling() {
-            return billing;
-        }
-
-        @JsonProperty("billing")
-        public void setBilling(Billing billing) {
-            this.billing = billing;
-        }
-
-        @JsonProperty("currency")
-        public String getCurrency() {
-            return currency;
-        }
-
-        @JsonProperty("currency")
-        public void setCurrency(String currency) {
-            this.currency = currency;
-        }
-
-        @JsonProperty("customParameters")
-        public CustomParameters getCustomParameters() {
-            return customParameters;
-        }
-
-        @JsonProperty("customParameters")
-        public void setCustomParameters(CustomParameters customParameters) {
-            this.customParameters = customParameters;
-        }
-
-        @JsonProperty("customer")
-        public Customer getCustomer() {
-            return customer;
-        }
-
-        @JsonProperty("customer")
-        public void setCustomer(Customer customer) {
-            this.customer = customer;
-        }
-
-        @JsonProperty("descriptor")
-        public String getDescriptor() {
-            return descriptor;
-        }
-
-        @JsonProperty("descriptor")
-        public void setDescriptor(String descriptor) {
-            this.descriptor = descriptor;
+        public Payment() {
         }
 
         @JsonProperty("id")
@@ -956,34 +959,14 @@ public class NotificationBean {
             this.id = id;
         }
 
-        @JsonProperty("merchantAccountId")
-        public String getMerchantAccountId() {
-            return merchantAccountId;
+        @JsonProperty("paymentType")
+        public String getPaymentType() {
+            return paymentType;
         }
 
-        @JsonProperty("merchantAccountId")
-        public void setMerchantAccountId(String merchantAccountId) {
-            this.merchantAccountId = merchantAccountId;
-        }
-
-        @JsonProperty("merchantTransactionId")
-        public String getMerchantTransactionId() {
-            return merchantTransactionId;
-        }
-
-        @JsonProperty("merchantTransactionId")
-        public void setMerchantTransactionId(String merchantTransactionId) {
-            this.merchantTransactionId = merchantTransactionId;
-        }
-
-        @JsonProperty("ndc")
-        public String getNdc() {
-            return ndc;
-        }
-
-        @JsonProperty("ndc")
-        public void setNdc(String ndc) {
-            this.ndc = ndc;
+        @JsonProperty("paymentType")
+        public void setPaymentType(String paymentType) {
+            this.paymentType = paymentType;
         }
 
         @JsonProperty("paymentBrand")
@@ -996,54 +979,44 @@ public class NotificationBean {
             this.paymentBrand = paymentBrand;
         }
 
-        @JsonProperty("paymentType")
-        public String getPaymentType() {
-            return paymentType;
+        @JsonProperty("amount")
+        public String getAmount() {
+            return amount;
         }
 
-        @JsonProperty("paymentType")
-        public void setPaymentType(String paymentType) {
-            this.paymentType = paymentType;
+        @JsonProperty("amount")
+        public void setAmount(String amount) {
+            this.amount = amount;
         }
 
-        @JsonProperty("presentationAmount")
-        public String getPresentationAmount() {
-            return presentationAmount;
+        @JsonProperty("currency")
+        public String getCurrency() {
+            return currency;
         }
 
-        @JsonProperty("presentationAmount")
-        public void setPresentationAmount(String presentationAmount) {
-            this.presentationAmount = presentationAmount;
+        @JsonProperty("currency")
+        public void setCurrency(String currency) {
+            this.currency = currency;
         }
 
-        @JsonProperty("presentationCurrency")
-        public String getPresentationCurrency() {
-            return presentationCurrency;
+        @JsonProperty("descriptor")
+        public String getDescriptor() {
+            return descriptor;
         }
 
-        @JsonProperty("presentationCurrency")
-        public void setPresentationCurrency(String presentationCurrency) {
-            this.presentationCurrency = presentationCurrency;
+        @JsonProperty("descriptor")
+        public void setDescriptor(String descriptor) {
+            this.descriptor = descriptor;
         }
 
-        @JsonProperty("redirect")
-        public Redirect getRedirect() {
-            return redirect;
+        @JsonProperty("merchantTransactionId")
+        public String getMerchantTransactionId() {
+            return merchantTransactionId;
         }
 
-        @JsonProperty("redirect")
-        public void setRedirect(Redirect redirect) {
-            this.redirect = redirect;
-        }
-
-        @JsonProperty("referencedId")
-        public String getReferencedId() {
-            return referencedId;
-        }
-
-        @JsonProperty("referencedId")
-        public void setReferencedId(String referencedId) {
-            this.referencedId = referencedId;
+        @JsonProperty("merchantTransactionId")
+        public void setMerchantTransactionId(String merchantTransactionId) {
+            this.merchantTransactionId = merchantTransactionId;
         }
 
         @JsonProperty("result")
@@ -1066,14 +1039,34 @@ public class NotificationBean {
             this.resultDetails = resultDetails;
         }
 
-        @JsonProperty("risk")
-        public Risk getRisk() {
-            return risk;
+        @JsonProperty("merchant")
+        public Merchant getMerchant() {
+            return merchant;
         }
 
-        @JsonProperty("risk")
-        public void setRisk(Risk risk) {
-            this.risk = risk;
+        @JsonProperty("merchant")
+        public void setMerchant(Merchant merchant) {
+            this.merchant = merchant;
+        }
+
+        @JsonProperty("billing")
+        public Billing getBilling() {
+            return billing;
+        }
+
+        @JsonProperty("billing")
+        public void setBilling(Billing billing) {
+            this.billing = billing;
+        }
+
+        @JsonProperty("customParameters")
+        public CustomParameters getCustomParameters() {
+            return customParameters;
+        }
+
+        @JsonProperty("customParameters")
+        public void setCustomParameters(CustomParameters customParameters) {
+            this.customParameters = customParameters;
         }
 
         @JsonProperty("timestamp")
@@ -1096,33 +1089,83 @@ public class NotificationBean {
             this.additionalProperties.put(name, value);
         }
 
+        @Override
+        public String toString() {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return json;
+        }
     }
 
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("payload")
-    private Payload payload;
+    @JsonProperty("result")
+    private Result result;
+    @JsonProperty("buildNumber")
+    private String buildNumber;
+    @JsonProperty("timestamp")
+    private String timestamp;
+    @JsonProperty("ndc")
+    private String ndc;
+    @JsonProperty("payments")
+    private List<Payment> payments = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    public MerchantIdReportBean() {
     }
 
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("result")
+    public Result getResult() {
+        return result;
     }
 
-    @JsonProperty("payload")
-    public Payload getPayload() {
-        return payload;
+    @JsonProperty("result")
+    public void setResult(Result result) {
+        this.result = result;
     }
 
-    @JsonProperty("payload")
-    public void setPayload(Payload payload) {
-        this.payload = payload;
+    @JsonProperty("buildNumber")
+    public String getBuildNumber() {
+        return buildNumber;
+    }
+
+    @JsonProperty("buildNumber")
+    public void setBuildNumber(String buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    @JsonProperty("timestamp")
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    @JsonProperty("timestamp")
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @JsonProperty("ndc")
+    public String getNdc() {
+        return ndc;
+    }
+
+    @JsonProperty("ndc")
+    public void setNdc(String ndc) {
+        this.ndc = ndc;
+    }
+
+    @JsonProperty("payments")
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    @JsonProperty("payments")
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 
     @JsonAnyGetter

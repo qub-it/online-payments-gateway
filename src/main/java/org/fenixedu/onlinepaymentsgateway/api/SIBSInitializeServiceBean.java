@@ -1,5 +1,7 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,18 +17,24 @@ public class SIBSInitializeServiceBean {
 
     private String aesKey;
 
-    public SIBSInitializeServiceBean(String entityId, String endpointUrl, String paymentEntity, String paymentCurrency) {
+    private SibsEnvironmentMode environmentMode;
+
+    public SIBSInitializeServiceBean(String entityId, String bearerToken, String endpointUrl, String paymentEntity,
+            String paymentCurrency, SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
+        this.bearerToken = bearerToken;
         this.endpointUrl = endpointUrl;
         this.paymentEntity = paymentEntity;
         this.paymentCurrency = paymentCurrency;
+        this.environmentMode = environmentMode;
     }
 
-    public SIBSInitializeServiceBean(String entityId, String aesKey) {
+    public SIBSInitializeServiceBean(String entityId, String aesKey, SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
         this.aesKey = aesKey;
+        this.environmentMode = environmentMode;
     }
 
     public SIBSInitializeServiceBean() {
@@ -36,6 +44,7 @@ public class SIBSInitializeServiceBean {
         boolean returnValue = true;
         returnValue &= entityId != null && !entityId.isEmpty();
         returnValue &= bearerToken != null && !bearerToken.isEmpty();
+        returnValue &= environmentMode != null;
         return returnValue;
     }
 
@@ -98,6 +107,14 @@ public class SIBSInitializeServiceBean {
 
     public void setAesKey(String aesKey) {
         this.aesKey = aesKey;
+    }
+
+    public SibsEnvironmentMode getEnvironmentMode() {
+        return environmentMode;
+    }
+
+    public void setEnvironmentMode(SibsEnvironmentMode environmentMode) {
+        this.environmentMode = environmentMode;
     }
 
     @Override

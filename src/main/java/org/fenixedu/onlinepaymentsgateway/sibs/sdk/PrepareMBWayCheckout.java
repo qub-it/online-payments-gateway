@@ -18,8 +18,10 @@ public class PrepareMBWayCheckout {
     private CustomerDataInputBean customerInput;
     private String phoneNumber;
 
+    private SibsEnvironmentMode environmentMode;
+
     public PrepareMBWayCheckout(String entityId, String amount, String currency, String paymentType, String paymentBrand,
-            String phoneNumber, CustomerDataInputBean customerInput) {
+            String phoneNumber, CustomerDataInputBean customerInput, SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
         this.amount = amount;
@@ -28,6 +30,7 @@ public class PrepareMBWayCheckout {
         this.paymentBrand = PaymentBrand.valueOf(paymentBrand);
         this.phoneNumber = phoneNumber;
         this.customerInput = customerInput;
+        this.environmentMode = environmentMode;
     }
 
     public PrepareMBWayCheckout() {
@@ -97,6 +100,14 @@ public class PrepareMBWayCheckout {
         this.phoneNumber = phoneNumber;
     }
 
+    public SibsEnvironmentMode getEnvironmentMode() {
+        return environmentMode;
+    }
+
+    public void setEnvironmentMode(SibsEnvironmentMode environmentMode) {
+        this.environmentMode = environmentMode;
+    }
+
     public MultivaluedMap<String, String> asMap() {
         MultivaluedMap<String, String> form = new MultivaluedHashMap<>();
         form.add("entityId", entityId);
@@ -105,7 +116,17 @@ public class PrepareMBWayCheckout {
         form.add("paymentType", paymentType.toString());
         form.add("paymentBrand", paymentBrand.toString());
         form.add("virtualAccount.accountId", phoneNumber);
-        //form.add("customParameters[SIBS_ENV]", "QLY");
+        if (environmentMode == SibsEnvironmentMode.TEST_MODE_EXTERNAL) {
+            form.add("testMode", "EXTERNAL");
+            form.add("customParameters[SIBS_ENV]", "QLY");
+        } else if (environmentMode == SibsEnvironmentMode.TEST_MODE_INTERNAL) {
+            form.add("testMode", "INTERNAL");
+            form.add("customParameters[SIBS_ENV]", "QLY");
+        } else if (environmentMode == SibsEnvironmentMode.PRODUCTION) {
+
+        } else {
+            throw new RuntimeException("Unknow environment mode.");
+        }
         if (merchantTransactionId != null) {
             form.add("merchantTransactionId", merchantTransactionId);
         }

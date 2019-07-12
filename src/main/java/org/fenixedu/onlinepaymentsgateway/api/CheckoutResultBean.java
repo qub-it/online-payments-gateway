@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CheckoutResultBean {
 
-    private String id;
+    private String checkoutId;
     private String merchantTransactionId;
     private String timestamp; //Date
     private String shopperResultUrl;
@@ -25,11 +25,11 @@ public class CheckoutResultBean {
 
     private Exception exception;
 
-    public CheckoutResultBean(String id, String timestamp, String shopperResultUrl, String paymentAmount, String paymentCurrency,
-            SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
+    public CheckoutResultBean(String checkoutId, String timestamp, String shopperResultUrl, String paymentAmount,
+            String paymentCurrency, SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
             String resultDescription) {
         super();
-        this.id = id;
+        this.checkoutId = checkoutId;
         this.timestamp = timestamp;
         this.shopperResultUrl = shopperResultUrl;
         this.paymentAmount = paymentAmount;
@@ -48,12 +48,12 @@ public class CheckoutResultBean {
         //  "000.100.110".equals(this.sibsResultCode); //detalhe de comunicaçao deve tar no sdk.
     }
 
-    public String getId() {
-        return id;
+    public String getCheckoutId() {
+        return checkoutId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCheckoutId(String checkoutId) {
+        this.checkoutId = checkoutId;
     }
 
     public String getMerchantTransactionId() {

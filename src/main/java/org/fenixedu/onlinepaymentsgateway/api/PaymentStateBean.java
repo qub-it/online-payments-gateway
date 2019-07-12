@@ -1,8 +1,12 @@
-package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
+package org.fenixedu.onlinepaymentsgateway.api;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -14,10 +18,42 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "paymentType", "paymentBrand", "amount", "currency", "descriptor", "merchantTransactionId", "result",
-        "resultDetails", "merchant", "customer", "billing", "customParameters", "card", "threeDSecure", "customParameters",
-        "risk", "buildNumber", "timestamp", "ndc", "virtualAccount" })
-public class TransactionReportBean {
+@JsonPropertyOrder({ "id", "paymentType", "paymentBrand", "amount", "currency", "descriptor", "merchantTransactionId",
+        "merchantAccountId", "result", "resultDetails", "merchant", "customer", "authentication", "billing", "customParameters",
+        "card", "threeDSecure", "risk", "redirect", "buildNumber", "timestamp", "ndc", "virtualAccount", "presentationAmount",
+        "presentationCurrency", "referencedId" })
+public class PaymentStateBean {
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "entityId" })
+    public static class Authentication {
+
+        @JsonProperty("entityId")
+        private String entityId;
+        @JsonIgnore
+        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+        @JsonProperty("entityId")
+        public String getEntityId() {
+            return entityId;
+        }
+
+        @JsonProperty("entityId")
+        public void setEntityId(String entityId) {
+            this.entityId = entityId;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+
+    }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonPropertyOrder({ "number", "bic", "country" })
@@ -348,6 +384,37 @@ public class TransactionReportBean {
         @JsonProperty("bankAccount")
         public void setBankAccount(BankAccount bankAccount) {
             this.bankAccount = bankAccount;
+        }
+
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, Object value) {
+            this.additionalProperties.put(name, value);
+        }
+
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonPropertyOrder({ "parameters" })
+    public static class Redirect {
+
+        @JsonProperty("parameters")
+        private List<Object> parameters = null;
+        @JsonIgnore
+        private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+        @JsonProperty("parameters")
+        public List<Object> getParameters() {
+            return parameters;
+        }
+
+        @JsonProperty("parameters")
+        public void setParameters(List<Object> parameters) {
+            this.parameters = parameters;
         }
 
         @JsonAnyGetter
@@ -791,13 +858,15 @@ public class TransactionReportBean {
     @JsonProperty("paymentBrand")
     private String paymentBrand;
     @JsonProperty("amount")
-    private String amount;
+    private BigDecimal amount;
     @JsonProperty("currency")
     private String currency;
     @JsonProperty("descriptor")
     private String descriptor;
     @JsonProperty("merchantTransactionId")
     private String merchantTransactionId;
+    @JsonProperty("merchantAccountId")
+    private String merchantAccountId;
     @JsonProperty("result")
     private Result result;
     @JsonProperty("resultDetails")
@@ -806,6 +875,8 @@ public class TransactionReportBean {
     private Merchant merchant;
     @JsonProperty("customer")
     private Customer customer;
+    @JsonProperty("authentication")
+    private Authentication authentication;
     @JsonProperty("billing")
     private Billing billing;
     @JsonProperty("card")
@@ -825,19 +896,44 @@ public class TransactionReportBean {
     @JsonProperty("virtualAccount")
     private VirtualAccount virtualAccount;
 
+    @JsonProperty("presentationAmount")
+    private String presentationAmount;
+    @JsonProperty("presentationCurrency")
+    private String presentationCurrency;
+    @JsonProperty("redirect")
+    private Redirect redirect;
+    @JsonProperty("referencedId")
+    private String referencedId;
+
     private String requestLog;
     private String responseLog;
     private SibsResultCodeType operationResultType;
     private String operationResultDescription;
     private String paymentState;
+    private DateTime paymentDate;
 
     private Exception exception;
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    public TransactionReportBean() {
-        super();
+    public PaymentStateBean() {
+    }
+
+    public boolean isPaid() {
+        return this.operationResultType.isPaid();
+    }
+
+    public boolean isOperationSuccess() {
+        return this.operationResultType.isSuccess();
+    }
+
+    public DateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(DateTime paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     @JsonProperty("id")
@@ -871,13 +967,13 @@ public class TransactionReportBean {
     }
 
     @JsonProperty("amount")
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
     @JsonProperty("amount")
     public void setAmount(String amount) {
-        this.amount = amount;
+        this.amount = new BigDecimal(amount);
     }
 
     @JsonProperty("currency")
@@ -1040,6 +1136,54 @@ public class TransactionReportBean {
         this.virtualAccount = virtualAccount;
     }
 
+    public String getMerchantAccountId() {
+        return merchantAccountId;
+    }
+
+    public void setMerchantAccountId(String merchantAccountId) {
+        this.merchantAccountId = merchantAccountId;
+    }
+
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
+    }
+
+    public String getPresentationAmount() {
+        return presentationAmount;
+    }
+
+    public void setPresentationAmount(String presentationAmount) {
+        this.presentationAmount = presentationAmount;
+    }
+
+    public String getPresentationCurrency() {
+        return presentationCurrency;
+    }
+
+    public void setPresentationCurrency(String presentationCurrency) {
+        this.presentationCurrency = presentationCurrency;
+    }
+
+    public Redirect getRedirect() {
+        return redirect;
+    }
+
+    public void setRedirect(Redirect redirect) {
+        this.redirect = redirect;
+    }
+
+    public String getReferencedId() {
+        return referencedId;
+    }
+
+    public void setReferencedId(String referencedId) {
+        this.referencedId = referencedId;
+    }
+
     public String getRequestLog() {
         return requestLog;
     }
@@ -1072,6 +1216,14 @@ public class TransactionReportBean {
         this.operationResultDescription = operationResultDescription;
     }
 
+    public String getPaymentState() {
+        return paymentState;
+    }
+
+    public void setPaymentState(String paymentState) {
+        this.paymentState = paymentState;
+    }
+
     public Exception getException() {
         return exception;
     }
@@ -1090,10 +1242,6 @@ public class TransactionReportBean {
         this.additionalProperties.put(name, value);
     }
 
-    public boolean isPaid() {
-        return true; //TODO
-    }
-
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
@@ -1105,4 +1253,5 @@ public class TransactionReportBean {
         }
         return json;
     }
+
 }
