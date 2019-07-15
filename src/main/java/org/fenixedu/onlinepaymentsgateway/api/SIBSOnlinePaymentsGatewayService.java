@@ -2,6 +2,7 @@ package org.fenixedu.onlinepaymentsgateway.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -51,6 +52,8 @@ public class SIBSOnlinePaymentsGatewayService {
     private Client client = ClientBuilder.newBuilder().register(feature).build();
     private WebTarget webTargetBase;
     private SIBSInitializeServiceBean initializeServiceBean;
+    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss+SSSS");
+    //DateTimeFormatter formatterPaymentDate = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");//TODO backup diferente dateformat
 
     public SIBSOnlinePaymentsGatewayService(SIBSInitializeServiceBean initializeServiceBean) {
         this.initializeServiceBean = initializeServiceBean;
@@ -114,8 +117,8 @@ public class SIBSOnlinePaymentsGatewayService {
 
             //components that might not exist need an IF
             MbCheckoutResultBean mbCheckoutResult = new MbCheckoutResultBean(result.getId(), result.getMerchantTransactionId(),
-                    result.getTimestamp(), result.getAmount(), result.getCurrency(), result.getPaymentBrand(),
-                    result.getPaymentType(), result.getCustomParameters().getSibsPaymentEntity(),
+                    DateTime.parse(result.getTimestamp(), formatter), result.getAmount(), result.getCurrency(),
+                    result.getPaymentBrand(), result.getPaymentType(), result.getCustomParameters().getSibsPaymentEntity(),
                     result.getResultDetails().getPmtRef(), result.getCustomParameters().getSibsRefIntDate(),
                     result.getCustomParameters().getSibsRefLmtDate(), operationResultType, operationResultDescription,
                     result.getResult().getCode(), result.getResult().getDescription());
@@ -211,10 +214,11 @@ public class SIBSOnlinePaymentsGatewayService {
             String operationResultDescription =
                     operationResultDescription(result.getResult().getDescription(), operationResultType);
 
-            MbWayCheckoutResultBean mbwayCheckoutResult = new MbWayCheckoutResultBean(result.getId(), result.getTimestamp(),
-                    result.getAmount(), result.getCurrency(), result.getPaymentBrand(), result.getPaymentType(),
-                    phoneNumberResult, result.getResultDetails().getAcquirerResponse(), operationResultType,
-                    operationResultDescription, result.getResult().getCode(), result.getResult().getDescription());
+            MbWayCheckoutResultBean mbwayCheckoutResult = new MbWayCheckoutResultBean(result.getId(),
+                    DateTime.parse(result.getTimestamp(), formatter), new BigDecimal(result.getAmount()), result.getCurrency(),
+                    result.getPaymentBrand(), result.getPaymentType(), phoneNumberResult,
+                    result.getResultDetails().getAcquirerResponse(), operationResultType, operationResultDescription,
+                    result.getResult().getCode(), result.getResult().getDescription());
 
             if (result.getMerchantTransactionId() != null) {
                 mbwayCheckoutResult.setMerchantTransactionId(result.getMerchantTransactionId());
@@ -281,12 +285,12 @@ public class SIBSOnlinePaymentsGatewayService {
         final String paymentType = useMB ? "PA" : "DB";
 
         final String billingCountry = "PT";
-        final String paymentAmount = prepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN).toString();
+        final BigDecimal paymentAmount = prepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN);
 
         final String shopperResultUrl = prepareCheckoutInputBean.getShopperResultUrl();
 
-        PrepareCheckout prepCheckout = new PrepareCheckout(entityId, paymentAmount, paymentCurrency, paymentType, billingCountry,
-                this.initializeServiceBean.getEnvironmentMode());
+        PrepareCheckout prepCheckout = new PrepareCheckout(entityId, paymentAmount.toString(), paymentCurrency, paymentType,
+                billingCountry, this.initializeServiceBean.getEnvironmentMode());
 
         if (useMB) {
             final String sibsRefIntDate = prepareCheckoutInputBean.getSibsRefIntDate().toString();
@@ -315,9 +319,10 @@ public class SIBSOnlinePaymentsGatewayService {
             String operationResultDescription =
                     operationResultDescription(result.getResult().getDescription(), operationResultType);
 
-            CheckoutResultBean checkoutResult = new CheckoutResultBean(result.getId(), result.getTimestamp(), shopperResultUrl,
-                    paymentAmount, paymentCurrency, operationResultType, operationResultDescription, result.getResult().getCode(),
-                    result.getResult().getDescription());
+            CheckoutResultBean checkoutResult =
+                    new CheckoutResultBean(result.getId(), DateTime.parse(result.getTimestamp(), formatter), shopperResultUrl,
+                            paymentAmount, paymentCurrency, operationResultType, operationResultDescription,
+                            result.getResult().getCode(), result.getResult().getDescription());
 
             checkoutResult.setRequestLog(requestLog);
             checkoutResult.setResponseLog(responseLog);
@@ -396,11 +401,8 @@ public class SIBSOnlinePaymentsGatewayService {
             transactionStatus.setOperationResultDescription(operationResultDescription);
             transactionStatus.setRequestLog(requestLog);
             transactionStatus.setResponseLog(responseLog);
-            //DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss+SSSS");
-            DateTimeFormatter formatter2 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
-            transactionStatus //TODO Resolver spam
-                    .setPaymentDate(DateTime.parse(transactionStatus.getResultDetails().getConnectorTxID2(), formatter2));
+            transactionStatus.setPaymentDate(DateTime.parse(transactionStatus.getTimestamp(), formatter));
 
             /*PaymentStatusBean paymentStatusBean = new PaymentStatusBean(transactionStatus.getId(), //2019-07-10 18:40:34+0000
                     DateTime.parse(transactionStatus.getTimestamp(), formatter).toDateTime(), transactionStatus.getPaymentType(),
@@ -421,7 +423,8 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     //Get transaction report from transaction ID
-    public PaymentStateBean getPaymentTransactionReport(String transactionId) throws OnlinePaymentsGatewayCommunicationException {
+    public PaymentStateBean getPaymentTransactionReportByTransactionId(String transactionId)
+            throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
         }
@@ -456,13 +459,11 @@ public class SIBSOnlinePaymentsGatewayService {
             transactionReport.setRequestLog(requestLog);
             transactionReport.setResponseLog(responseLog);
 
-            DateTimeFormatter formatterPaymentDate = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");//TODO resolver spam
-
-            transactionReport.setPaymentDate(
-                    DateTime.parse(transactionReport.getResultDetails().getConnectorTxID2(), formatterPaymentDate));
+            transactionReport.setPaymentDate(DateTime.parse(transactionReport.getTimestamp(), formatter));
 
             boolean validAnswer = true;
-            validAnswer &= transactionReport.getId() != null && transactionReport.getId().equals(transactionId);
+            validAnswer &=
+                    transactionReport.getTransactionId() != null && transactionReport.getTransactionId().equals(transactionId);
             if (!validAnswer) {
                 throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog,
                         "Request and Response details do not match.");
@@ -477,7 +478,7 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     //Get transaction report from merchant transaction ID
-    public PaymentStateBean getPaymentTransactionReportMerchantId(String merchantTransactionId)
+    public PaymentStateBean getPaymentTransactionReportByMerchantId(String merchantTransactionId)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
@@ -569,7 +570,7 @@ public class SIBSOnlinePaymentsGatewayService {
 
         //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
         //handle das varias opções, notification bean geral + notificationbean especificos
-        logger = fileLogger("webhookLive");
+        //logger = fileLogger("webhookLive");
         logger.debug("Request: " + httpServletRequest.toString());
 
         String initializationVector = httpServletRequest.getHeader("X-Initialization-Vector");

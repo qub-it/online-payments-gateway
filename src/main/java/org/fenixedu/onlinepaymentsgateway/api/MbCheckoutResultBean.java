@@ -5,17 +5,20 @@ import java.math.BigDecimal;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MbCheckoutResultBean {
 
-    private String id;
+    private String transactionId;
     private String merchantTransactionId;
-    private String timestamp; //Date
+    private DateTime timestamp;
 
     private BigDecimal amount;
     private String currency;
@@ -37,12 +40,12 @@ public class MbCheckoutResultBean {
 
     private Exception exception;
 
-    public MbCheckoutResultBean(String id, String merchantTransactionId, String timestamp, String amount, String currency,
-            String paymentBrand, String paymentType, String paymentEntity, String paymentReference, String paymentRefInitialDate,
-            String paymentRefLimitDate, SibsResultCodeType operationResultType, String operationResultDescription,
-            String resultCode, String resultDescription) {
+    public MbCheckoutResultBean(String transactionId, String merchantTransactionId, DateTime timestamp, String amount,
+            String currency, String paymentBrand, String paymentType, String paymentEntity, String paymentReference,
+            String paymentRefInitialDate, String paymentRefLimitDate, SibsResultCodeType operationResultType,
+            String operationResultDescription, String resultCode, String resultDescription) {
         super();
-        this.id = id;
+        this.transactionId = transactionId;
         this.merchantTransactionId = merchantTransactionId;
         this.timestamp = timestamp;
         this.amount = new BigDecimal(amount);
@@ -63,10 +66,6 @@ public class MbCheckoutResultBean {
         super();
     }
 
-    public boolean isPaid() {
-        return false;
-    }
-
     public boolean isOperationSuccess() {
         return this.operationResultType.isSuccess();
     }
@@ -79,12 +78,12 @@ public class MbCheckoutResultBean {
         this.paymentState = paymentState;
     }
 
-    public String getId() {
-        return id;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getMerchantTransactionId() {
@@ -95,11 +94,11 @@ public class MbCheckoutResultBean {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getTimestamp() {
+    public DateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -226,6 +225,8 @@ public class MbCheckoutResultBean {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         String json = "";
         try {
             json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);

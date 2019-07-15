@@ -1,17 +1,22 @@
 package org.fenixedu.onlinepaymentsgateway.api;
 
+import java.math.BigDecimal;
+
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 public class CheckoutResultBean {
 
     private String checkoutId;
     private String merchantTransactionId;
-    private String timestamp; //Date
+    private DateTime timestamp;
     private String shopperResultUrl;
-    private String paymentAmount;
+    private BigDecimal paymentAmount;
     private String paymentCurrency;
     private String paymentGatewayResultCode;
     private String paymentGatewayResultDescription;
@@ -25,7 +30,7 @@ public class CheckoutResultBean {
 
     private Exception exception;
 
-    public CheckoutResultBean(String checkoutId, String timestamp, String shopperResultUrl, String paymentAmount,
+    public CheckoutResultBean(String checkoutId, DateTime timestamp, String shopperResultUrl, BigDecimal paymentAmount,
             String paymentCurrency, SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
             String resultDescription) {
         super();
@@ -64,11 +69,11 @@ public class CheckoutResultBean {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getTimestamp() {
+    public DateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -80,11 +85,11 @@ public class CheckoutResultBean {
         this.shopperResultUrl = shopperResultUrl;
     }
 
-    public String getPaymentAmount() {
+    public BigDecimal getPaymentAmount() {
         return paymentAmount;
     }
 
-    public void setPaymentAmount(String paymentAmount) {
+    public void setPaymentAmount(BigDecimal paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
 
@@ -163,6 +168,8 @@ public class CheckoutResultBean {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         String json = "";
         try {
             json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);

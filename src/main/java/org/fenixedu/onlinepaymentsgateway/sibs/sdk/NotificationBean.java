@@ -1101,7 +1101,7 @@ public class NotificationBean {
     @JsonProperty("type")
     private String type;
     @JsonProperty("payload")
-    private Payload payload;
+    private Payload payload; //TODO passar para PaymentStateBean
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 

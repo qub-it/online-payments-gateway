@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "id", "paymentType", "paymentBrand", "amount", "currency", "descriptor", "merchantTransactionId",
@@ -852,7 +854,7 @@ public class PaymentStateBean {
     }
 
     @JsonProperty("id")
-    private String id;
+    private String transactionId;
     @JsonProperty("paymentType")
     private String paymentType;
     @JsonProperty("paymentBrand")
@@ -921,7 +923,7 @@ public class PaymentStateBean {
     }
 
     public boolean isPaid() {
-        return this.operationResultType.isPaid();
+        return this.operationResultType.isPaid(); //verificar diff entre checkouts e notifications
     }
 
     public boolean isOperationSuccess() {
@@ -936,14 +938,22 @@ public class PaymentStateBean {
         this.paymentDate = paymentDate;
     }
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
+    public String getPaymentGatewayResultCode() {
+        return getResult().getCode();
+    }
+
+    public String getPaymentGatewayResultDescription() {
+        return getResult().getDescription();
     }
 
     @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    @JsonProperty("id")
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     @JsonProperty("paymentType")
@@ -972,8 +982,8 @@ public class PaymentStateBean {
     }
 
     @JsonProperty("amount")
-    public void setAmount(String amount) {
-        this.amount = new BigDecimal(amount);
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     @JsonProperty("currency")
@@ -1245,6 +1255,8 @@ public class PaymentStateBean {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         String json = "";
         try {
             json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);

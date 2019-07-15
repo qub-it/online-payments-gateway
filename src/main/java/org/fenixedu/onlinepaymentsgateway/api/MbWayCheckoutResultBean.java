@@ -5,17 +5,20 @@ import java.math.BigDecimal;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MbWayCheckoutResultBean {
 
-    private String id;
+    private String transactionId;
     private String merchantTransactionId;
-    private String timestamp; //Date
+    private DateTime timestamp;
 
     private BigDecimal amount;
     private String currency;
@@ -35,13 +38,14 @@ public class MbWayCheckoutResultBean {
 
     private Exception exception;
 
-    public MbWayCheckoutResultBean(String id, String timestamp, String amount, String currency, String paymentBrand,
-            String paymentType, String phoneNumber, String acquirerResponse, SibsResultCodeType operationResultType,
-            String operationResultDescription, String resultCode, String resultDescription) {
+    public MbWayCheckoutResultBean(String transactionId, DateTime timestamp, BigDecimal amount, String currency,
+            String paymentBrand, String paymentType, String phoneNumber, String acquirerResponse,
+            SibsResultCodeType operationResultType, String operationResultDescription, String resultCode,
+            String resultDescription) {
         super();
-        this.id = id;
+        this.transactionId = transactionId;
         this.timestamp = timestamp;
-        this.amount = new BigDecimal(amount);
+        this.amount = amount;
         this.currency = currency;
         this.paymentBrand = PaymentBrand.valueOf(paymentBrand);
         this.paymentType = PaymentType.valueOf(paymentType);
@@ -57,10 +61,6 @@ public class MbWayCheckoutResultBean {
         super();
     }
 
-    public boolean isPaid() {
-        return this.operationResultType.isPaid();
-    }
-
     public boolean isOperationSuccess() {
         return this.operationResultType.isSuccess();
         //  "000.100.110".equals(this.sibsResultCode); //detalhe de comunicaçao deve tar no sdk.
@@ -74,12 +74,12 @@ public class MbWayCheckoutResultBean {
         this.paymentState = paymentState;
     }
 
-    public String getId() {
-        return id;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getMerchantTransactionId() {
@@ -90,11 +90,11 @@ public class MbWayCheckoutResultBean {
         this.merchantTransactionId = merchantTransactionId;
     }
 
-    public String getTimestamp() {
+    public DateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(DateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -205,6 +205,8 @@ public class MbWayCheckoutResultBean {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         String json = "";
         try {
             json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
