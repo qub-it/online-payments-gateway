@@ -1,2 +1,4 @@
+- Refactor: Comment dependencies which conflict with other modules
+
 1.0.0 (17-07-2019)
 - Initial release
