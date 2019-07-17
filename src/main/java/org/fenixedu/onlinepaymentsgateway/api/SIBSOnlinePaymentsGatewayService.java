@@ -542,7 +542,7 @@ public class SIBSOnlinePaymentsGatewayService {
     //TODO Juntar ao PaymentStateBean, verificar como lidar com "Type" e "Payload"
     public NotificationBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
-        logger = fileLogger("webhookLive");
+        //logger = fileLogger("webhookLive");
         logger.debug("Request encrypted: " + encryptedPayload.toString());
         String decryptedPayload = null;
         try {
