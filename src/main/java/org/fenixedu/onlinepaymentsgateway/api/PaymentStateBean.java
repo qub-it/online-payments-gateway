@@ -913,6 +913,7 @@ public class PaymentStateBean {
     private String operationResultDescription;
     private String paymentState;
     private DateTime paymentDate;
+    private String notificationType;
 
     private Exception exception;
 
@@ -944,6 +945,14 @@ public class PaymentStateBean {
 
     public String getPaymentGatewayResultDescription() {
         return getResult().getDescription();
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
     }
 
     @JsonProperty("id")

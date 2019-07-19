@@ -1,5 +1,6 @@
 package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -824,7 +825,7 @@ public class NotificationBean {
         }
 
         @JsonProperty("amount")
-        private String amount;
+        private BigDecimal amount;
         @JsonProperty("authentication")
         private Authentication authentication;
         @JsonProperty("billing")
@@ -877,12 +878,12 @@ public class NotificationBean {
         private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
         @JsonProperty("amount")
-        public String getAmount() {
+        public BigDecimal getAmount() {
             return amount;
         }
 
         @JsonProperty("amount")
-        public void setAmount(String amount) {
+        public void setAmount(BigDecimal amount) {
             this.amount = amount;
         }
 
@@ -1096,6 +1097,16 @@ public class NotificationBean {
             this.additionalProperties.put(name, value);
         }
 
+        public String toJson() {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = "";
+            try {
+                json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            return json;
+        }
     }
 
     @JsonProperty("type")

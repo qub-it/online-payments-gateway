@@ -540,7 +540,7 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     //TODO Juntar ao PaymentStateBean, verificar como lidar com "Type" e "Payload"
-    public NotificationBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
+    public PaymentStateBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
         //logger = fileLogger("webhookLive");
         logger.debug("Request encrypted: " + encryptedPayload.toString());
@@ -556,28 +556,33 @@ public class SIBSOnlinePaymentsGatewayService {
             NotificationBean payload = customMapper(decryptedPayload, NotificationBean.class);
             logger.debug("\n Payload content: " + payload.toString());
 
-            return payload;
+            String payloadOnly = payload.getPayload().toJson();
+
+            PaymentStateBean notificationReport = customMapper(payloadOnly, PaymentStateBean.class);
+            notificationReport.setNotificationType(payload.getType().toString());
+            SibsResultCodeType operationResultType = validateSibsResult(notificationReport.getResult().getCode());
+            String operationResultDescription =
+                    operationResultDescription(notificationReport.getResult().getDescription(), operationResultType);
+
+            notificationReport.setOperationResultType(operationResultType);
+            notificationReport.setOperationResultDescription(operationResultDescription);
+
+            return notificationReport;
         } catch (Exception e) {
             throw new OnlinePaymentsGatewayCommunicationException(null, decryptedPayload, e);
         }
 
     }
 
-    public NotificationBean handleNotificationServletRequest(HttpServletRequest httpServletRequest) throws Exception {
-        //Receber o httpservlet request (argumento do metodo) - criar um bean com os dados do header e do payload, listener vs callback
-        //handlenotification(servletrequest.getheader(Vetores)...
-        //Interface com handlers do lado aplicacional (handlepaymentMb ou handleError()
-
-        //Estrutura de dados faz + sentido para notificações que sao apenas para MB, se houver vários tipos deve-se fazer handle das varias opçoes
-        //handle das varias opções, notification bean geral + notificationbean especificos
-        //logger = fileLogger("webhookLive");
+    public PaymentStateBean handleNotificationServletRequest(HttpServletRequest httpServletRequest) throws Exception {
+        logger = fileLogger("webhookLive");
         logger.debug("Request: " + httpServletRequest.toString());
 
         String initializationVector = httpServletRequest.getHeader("X-Initialization-Vector");
         String authTag = httpServletRequest.getHeader("X-Authentication-Tag");
         String encryptedPayload = httpServletRequest.getReader().readLine();
 
-        NotificationBean payload = handleNotificationRequest(initializationVector, authTag, encryptedPayload);
+        PaymentStateBean payload = handleNotificationRequest(initializationVector, authTag, encryptedPayload);
         return payload;
     }
 
@@ -623,14 +628,16 @@ public class SIBSOnlinePaymentsGatewayService {
     //TODO remove file logging on service after testing webhooks (needs to be on client, not on server side)
 
     private Logger fileLogger(String fileName) throws SecurityException, IOException {
+        java.util.logging.Logger filelogger =
+                java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName());
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss.SSS");
         File logDir = new File("./logs/");
         if (!(logDir.exists()))
             logDir.mkdir();
         FileHandler fh = new FileHandler("logs/" + fileName + "_" + format.format(Calendar.getInstance().getTime()) + ".log");
         fh.setFormatter(new SimpleFormatter());
-        ((java.util.logging.Logger) logger).addHandler(fh);
-        ((java.util.logging.Logger) logger).setLevel(Level.INFO);
+        filelogger.addHandler(fh);
+        filelogger.setLevel(Level.FINEST);
         return logger;
     }
 

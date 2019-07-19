@@ -13,7 +13,6 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 public class CheckoutResultBean {
 
     private String checkoutId;
-    private String merchantTransactionId;
     private DateTime timestamp;
     private String shopperResultUrl;
     private BigDecimal paymentAmount;
@@ -59,14 +58,6 @@ public class CheckoutResultBean {
 
     public void setCheckoutId(String checkoutId) {
         this.checkoutId = checkoutId;
-    }
-
-    public String getMerchantTransactionId() {
-        return merchantTransactionId;
-    }
-
-    public void setMerchantTransactionId(String merchantTransactionId) {
-        this.merchantTransactionId = merchantTransactionId;
     }
 
     public DateTime getTimestamp() {
