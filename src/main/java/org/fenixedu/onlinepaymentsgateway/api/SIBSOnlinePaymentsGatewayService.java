@@ -445,7 +445,6 @@ public class SIBSOnlinePaymentsGatewayService {
         Builder builder = target.queryParam("entityId", entityId).request("application/x-www-form-urlencoded; charset=UTF-8")
                 .accept(MediaType.APPLICATION_JSON);
 
-        //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         try {
             responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
             PaymentStateBean transactionReport = customMapper(responseLog, PaymentStateBean.class);
@@ -500,7 +499,6 @@ public class SIBSOnlinePaymentsGatewayService {
         Builder builder = target.queryParam("entityId", entityId).queryParam("merchantTransactionId", merchantTransactionId)
                 .request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
 
-        //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         try {
             responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
             MerchantIdReportBean merchantReport = customMapper(responseLog, MerchantIdReportBean.class);
@@ -542,7 +540,6 @@ public class SIBSOnlinePaymentsGatewayService {
     //TODO Juntar ao PaymentStateBean, verificar como lidar com "Type" e "Payload"
     public PaymentStateBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
-        //logger = fileLogger("webhookLive");
         logger.debug("Request encrypted: " + encryptedPayload.toString());
         String decryptedPayload = null;
         try {
@@ -575,15 +572,25 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     public PaymentStateBean handleNotificationServletRequest(HttpServletRequest httpServletRequest) throws Exception {
-        logger = fileLogger("webhookLive");
-        logger.debug("Request: " + httpServletRequest.toString());
-
-        String initializationVector = httpServletRequest.getHeader("X-Initialization-Vector");
-        String authTag = httpServletRequest.getHeader("X-Authentication-Tag");
-        String encryptedPayload = httpServletRequest.getReader().readLine();
+        String initializationVector = notificationInitializationVector(httpServletRequest);
+        String authTag = notificationAuthenticationTag(httpServletRequest);
+        String encryptedPayload = notificationEncryptedPayload(httpServletRequest);
 
         PaymentStateBean payload = handleNotificationRequest(initializationVector, authTag, encryptedPayload);
+
         return payload;
+    }
+    
+    public static String notificationEncryptedPayload(final HttpServletRequest request) throws Exception {
+        return request.getReader().readLine();
+    }
+    
+    public static String notificationInitializationVector(final HttpServletRequest request) {
+        return request.getHeader("X-Initialization-Vector");
+    }
+    
+    public static String notificationAuthenticationTag(final HttpServletRequest request) {
+        return request.getHeader("X-Authentication-Tag");
     }
 
     /*Content-Length: 2454
@@ -626,7 +633,6 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     //TODO remove file logging on service after testing webhooks (needs to be on client, not on server side)
-
     private Logger fileLogger(String fileName) throws SecurityException, IOException {
         java.util.logging.Logger filelogger =
                 java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName());
