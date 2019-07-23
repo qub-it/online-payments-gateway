@@ -1,3 +1,4 @@
+1.1.0 (23-07-2019)
 - Refactor: Methods to retrieve SIBS notification payload and parameters in order to register in log
 
 1.0.1 (17-07-2019)
