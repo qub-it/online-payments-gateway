@@ -12,10 +12,16 @@ public class Decryption {
 
     public static final int GCM_TAG_LENGTH = 16; // in bytes
 
-    private String iv = "<X-Initialization-Vector Header>";
-    private String aesKey = "<AES KEY>";
-    private String authTag = "<X-Authentication-Tag Header>";
-    private String payload = "<payload body>";
+    // X-Initialization-Vector Header
+    private String iv;
+    
+    // AES KEY
+    private String aesKey;
+    
+    // X-Authentication-Tag Header
+    private String authTag;
+    
+    private String payload;
 
     public Decryption(String aesKey, String iv, String authTag, String payload) {
         super();
@@ -62,20 +68,18 @@ public class Decryption {
     }
 
     public String decryptPayload() throws Exception {
-        byte[] bKey = Hex.decodeHex(aesKey.toCharArray());
-        byte[] bIV = Hex.decodeHex(iv.toCharArray());
-        byte[] encryptedBytes = Hex.decodeHex((payload + authTag).toCharArray());
+        final byte[] bKey = Hex.decodeHex(aesKey.toCharArray());
+        final byte[] bIV = Hex.decodeHex(iv.toCharArray());
+        final byte[] encryptedBytes = Hex.decodeHex((payload + authTag).toCharArray());
 
-        SecretKeySpec sKey = new SecretKeySpec(bKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "SunJCE");
-        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, bIV);
+        final SecretKeySpec sKey = new SecretKeySpec(bKey, "AES");
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "SunJCE");
+        final GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, bIV);
         cipher.init(Cipher.DECRYPT_MODE, sKey, spec);
+
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
-
-    /*TODO public MBNotificationBean handleMBNotification(NotificationBean notificationBean) {
-        return null
-    }*/
-
+    
 }

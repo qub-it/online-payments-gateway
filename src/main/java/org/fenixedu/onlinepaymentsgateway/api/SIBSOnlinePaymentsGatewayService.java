@@ -48,7 +48,7 @@ public class SIBSOnlinePaymentsGatewayService {
 
     private static Logger logger = LoggerFactory.getLogger(SIBSOnlinePaymentsGatewayService.class);
     private Feature feature = new LoggingFeature(
-            java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName()), Level.INFO, null, null);
+            java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName()), Level.FINEST, null, null);
     private Client client = ClientBuilder.newBuilder().register(feature).build();
     private WebTarget webTargetBase;
     private SIBSInitializeServiceBean initializeServiceBean;
@@ -516,10 +516,7 @@ public class SIBSOnlinePaymentsGatewayService {
             transactionReport.setRequestLog(requestLog);
             transactionReport.setResponseLog(responseLog);
 
-            DateTimeFormatter formatterPaymentDate = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");//TODO resolver spam
-
-            transactionReport.setPaymentDate(
-                    DateTime.parse(transactionReport.getResultDetails().getConnectorTxID2(), formatterPaymentDate));
+            transactionReport.setPaymentDate(DateTime.parse(transactionReport.getTimestamp(), formatter));
 
             boolean validAnswer = true;
             validAnswer &= transactionReport.getMerchantTransactionId() != null
@@ -555,18 +552,23 @@ public class SIBSOnlinePaymentsGatewayService {
 
             String payloadOnly = payload.getPayload().toJson();
 
-            PaymentStateBean notificationReport = customMapper(payloadOnly, PaymentStateBean.class);
+            final PaymentStateBean notificationReport = customMapper(payloadOnly, PaymentStateBean.class);
             notificationReport.setNotificationType(payload.getType().toString());
-            SibsResultCodeType operationResultType = validateSibsResult(notificationReport.getResult().getCode());
-            String operationResultDescription =
+            
+            final SibsResultCodeType operationResultType = validateSibsResult(notificationReport.getResult().getCode());
+            final String operationResultDescription =
                     operationResultDescription(notificationReport.getResult().getDescription(), operationResultType);
 
             notificationReport.setOperationResultType(operationResultType);
             notificationReport.setOperationResultDescription(operationResultDescription);
 
+            notificationReport.setRequestLog(decryptedPayload);
+
+            notificationReport.setPaymentDate(DateTime.parse(notificationReport.getTimestamp(), formatter));
+
             return notificationReport;
         } catch (Exception e) {
-            throw new OnlinePaymentsGatewayCommunicationException(null, decryptedPayload, e);
+            throw new OnlinePaymentsGatewayCommunicationException(decryptedPayload, null, e);
         }
 
     }
