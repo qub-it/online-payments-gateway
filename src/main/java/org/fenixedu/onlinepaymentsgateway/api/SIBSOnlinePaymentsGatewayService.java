@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
@@ -24,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.MerchantIdReportBean;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.MerchantIdReportBean.Payment;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareCheckout;
@@ -476,7 +479,6 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //Get transaction report from merchant transaction ID
     public PaymentStateBean getPaymentTransactionReportByMerchantId(String merchantTransactionId)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -528,6 +530,67 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return transactionReport;
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
+        }
+    }
+
+    
+    public List<PaymentStateBean> getPaymentTransactionsReportListByMerchantId(String merchantTransactionId) throws OnlinePaymentsGatewayCommunicationException {
+        if (!this.initializeServiceBean.isAuthPropertiesValid()) {
+            throw new IllegalArgumentException("Invalid Service Authentication");
+        }
+        if (merchantTransactionId == null || merchantTransactionId.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Merchant Transaction Id");
+        }
+
+        WebTarget target = webTargetBase.path("query");
+
+        final String bearerToken = this.initializeServiceBean.getBearerToken();
+        final String entityId = this.initializeServiceBean.getEntityId();
+
+        final String requestLog = "Entity Id = " + entityId + ", Authorization = " + bearerToken + ", Merchant Transaction Id = "
+                + merchantTransactionId;
+
+        String responseLog = null;
+
+        Builder builder = target.queryParam("entityId", entityId).queryParam("merchantTransactionId", merchantTransactionId)
+                .request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
+
+        try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
+            MerchantIdReportBean merchantReport = customMapper(responseLog, MerchantIdReportBean.class);
+            
+            final List<PaymentStateBean> result = new ArrayList<>();
+            for (final Payment payment : merchantReport.getPayments()) {
+                String lastPayment = payment.toString();
+
+                PaymentStateBean transactionReport = customMapper(lastPayment, PaymentStateBean.class);
+
+                SibsResultCodeType operationResultType = validateSibsResult(transactionReport.getResult().getCode());
+                String operationResultDescription =
+                        operationResultDescription(transactionReport.getResult().getDescription(), operationResultType);
+
+                transactionReport.setOperationResultType(operationResultType);
+                transactionReport.setOperationResultDescription(operationResultDescription);
+                transactionReport.setRequestLog(requestLog);
+                transactionReport.setResponseLog(responseLog);
+
+                transactionReport.setPaymentDate(DateTime.parse(transactionReport.getTimestamp(), formatter));
+
+                boolean validAnswer = true;
+                validAnswer &= transactionReport.getMerchantTransactionId() != null
+                        && transactionReport.getMerchantTransactionId().equals(merchantTransactionId);
+                if (!validAnswer) {
+                    throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog,
+                            "Request and Response details do not match.");
+                }
+                
+                result.add(transactionReport);
+            }
+
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
