@@ -14,6 +14,8 @@ import java.util.logging.SimpleFormatter;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -29,6 +31,7 @@ import org.fenixedu.onlinepaymentsgateway.sibs.sdk.MerchantIdReportBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.MerchantIdReportBean.Payment;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareCheckout;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareCheckoutResult;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBCheckout;
@@ -87,7 +90,7 @@ public class SIBSOnlinePaymentsGatewayService {
         final String entityId = this.initializeServiceBean.getEntityId();
         final String paymentCurrency = this.initializeServiceBean.getPaymentCurrency();
         final String paymentEntity = this.initializeServiceBean.getPaymentEntity();
-        final String paymentType = "PA";
+        final String paymentType = PaymentType.PA.name();
         final String paymentBrand = "SIBS_MULTIBANCO";
         final String billingCountry = "PT";
         final String paymentAmount = mbPrepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN).toString();
@@ -104,7 +107,6 @@ public class SIBSOnlinePaymentsGatewayService {
             mbPrepCheckout.setMerchantTransactionId(merchantTransactionId);
         }
 
-        //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         final String requestLog = mbPrepCheckout.toString();
         Form form = new Form(mbPrepCheckout.asMap());
         String responseLog = null;
@@ -155,8 +157,10 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return mbCheckoutResult;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }
@@ -185,7 +189,7 @@ public class SIBSOnlinePaymentsGatewayService {
         final String bearerToken = this.initializeServiceBean.getBearerToken();
         final String entityId = this.initializeServiceBean.getEntityId();
         final String paymentCurrency = this.initializeServiceBean.getPaymentCurrency();
-        final String paymentType = "DB";
+        final String paymentType = PaymentType.DB.name();
         final String paymentBrand = "MBWAY";
         final String paymentAmount = mbwayPrepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN).toString();
         final String phoneNumber = mbwayPrepareCheckoutInputBean.getPhoneNumber();
@@ -198,7 +202,6 @@ public class SIBSOnlinePaymentsGatewayService {
             mbwayPrepCheckout.setMerchantTransactionId(merchantTransactionId);
         }
 
-        //TODO trycatch geral, com catch para o Bean, contem jsonPayload, Stacktrace
         final String requestLog = mbwayPrepCheckout.toString();
         Form form = new Form(mbwayPrepCheckout.asMap());
         String responseLog = null;
@@ -250,14 +253,15 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return mbwayCheckoutResult;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
-            //e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
 
     }
 
-    //Create checkout for CopyandPay: CC use: 4188 3600 4999 2021     05/20   334
     public CheckoutResultBean prepareOnlinePaymentCheckout(PrepareCheckoutInputBean prepareCheckoutInputBean)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -285,7 +289,7 @@ public class SIBSOnlinePaymentsGatewayService {
         final Boolean useMBway = prepareCheckoutInputBean.getUseMBway();
         final Boolean useMB = prepareCheckoutInputBean.getUseMB();
 
-        final String paymentType = useMB ? "PA" : "DB";
+        final String paymentType = useMB ? PaymentType.PA.name() : PaymentType.DB.name();
 
         final String billingCountry = "PT";
         final BigDecimal paymentAmount = prepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN);
@@ -347,6 +351,9 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return checkoutResult;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
             e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
@@ -419,6 +426,9 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return transactionStatus;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
             e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
@@ -473,8 +483,10 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return transactionReport;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }
@@ -530,8 +542,10 @@ public class SIBSOnlinePaymentsGatewayService {
 
             return transactionReport;
 
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }
@@ -591,8 +605,10 @@ public class SIBSOnlinePaymentsGatewayService {
             }
 
             return result;
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
         }
     }

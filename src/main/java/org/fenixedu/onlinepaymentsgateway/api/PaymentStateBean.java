@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
 import org.joda.time.DateTime;
 
@@ -924,7 +925,7 @@ public class PaymentStateBean {
     }
 
     public boolean isPaid() {
-        return this.operationResultType.isPaid(); //verificar diff entre checkouts e notifications
+        return this.operationResultType.isPaid() && (PaymentType.DB.name().equals(getPaymentType()) || PaymentType.RC.name().equals(getPaymentType()));
     }
 
     public boolean isOperationSuccess() {

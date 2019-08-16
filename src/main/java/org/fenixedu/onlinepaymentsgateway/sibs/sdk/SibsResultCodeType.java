@@ -1,8 +1,6 @@
 package org.fenixedu.onlinepaymentsgateway.sibs.sdk;
 
 public enum SibsResultCodeType {
-//TODO validar em casos como paymentstatusbean / transaction report - 
-    //SUCCCESSFUL_REQUEST(true, "^000[.]100[.]1|000[.]000[.]", false),
     SUCCESSFUL_TRANSACTION(true, "^(000[.]000[.]|000[.]100[.]1|000[.][36])", true),
     SUCESSFUL_PROCESSED_TRANSACTION_FOR_REVIEW(true, "^(000[.]400[.]0[^3]|000[.]400[.]100)", true),
     PENDING_TRANSACTION(true, "^(000[.]200|800[.]400[.]5|100[.]400[.]500)", false),
