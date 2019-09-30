@@ -491,6 +491,9 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
+    @Deprecated
+    // The last transaction may not be a payment. The payment state status must be presented and analysed 
+    // with each transaction associated with merchant transaction id
     public PaymentStateBean getPaymentTransactionReportByMerchantId(String merchantTransactionId)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
