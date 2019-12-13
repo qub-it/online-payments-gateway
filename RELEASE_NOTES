@@ -1,3 +1,5 @@
+- Improvement: Send billing data for SIBS OPPWA in online payment request
+
 1.2.1 (16-08-2019)
 - Refactor: SIBS OPPWA: Consider transaction as paid if paymentType is RC or DB
 - Refactor: Add one more payment type RC

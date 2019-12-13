@@ -15,13 +15,18 @@ public class PrepareCheckout {
     private String SIBSMULTIBANCO_PtmntEntty;
     private String SIBSMULTIBANCO_RefIntlDtTm;
     private String SIBSMULTIBANCO_RefLmtDtTm;
-    private String billingCountry;
 
     private SibsEnvironmentMode environmentMode;
 
+    private String billingCity;
+    private String billingCountry;
+    private String billingStreet1;
+    private String billingPostcode;
+    private String customerEmail;
+    private String cardHolder;
+
     public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String sIBSMULTIBANCO_PtmntEntty,
-            String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm, String billingCountry,
-            SibsEnvironmentMode environmentMode) {
+            String sIBSMULTIBANCO_RefIntlDtTm, String sIBSMULTIBANCO_RefLmtDtTm, SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
         this.amount = amount;
@@ -30,21 +35,29 @@ public class PrepareCheckout {
         this.SIBSMULTIBANCO_PtmntEntty = sIBSMULTIBANCO_PtmntEntty;
         this.SIBSMULTIBANCO_RefIntlDtTm = sIBSMULTIBANCO_RefIntlDtTm;
         this.SIBSMULTIBANCO_RefLmtDtTm = sIBSMULTIBANCO_RefLmtDtTm;
-        this.billingCountry = billingCountry;
         this.environmentMode = environmentMode;
     }
 
-    public PrepareCheckout(String entityId, String amount, String currency, String paymentType, String billingCountry,
+    public PrepareCheckout(String entityId, String amount, String currency, String paymentType,
             SibsEnvironmentMode environmentMode) {
         super();
         this.entityId = entityId;
         this.amount = amount;
         this.currency = currency;
         this.paymentType = PaymentType.valueOf(paymentType);
-        this.billingCountry = billingCountry;
         this.environmentMode = environmentMode;
     }
 
+    public void fillBillingData(final String cardHolder, final String billingCountry, final String billingCity, 
+            final String billingStreet1, final String billingPostcode, final String customerEmail) {
+        this.cardHolder = cardHolder;
+        this.billingCountry = billingCountry;
+        this.billingCity = billingCity;
+        this.billingStreet1 = billingStreet1;
+        this.billingPostcode = billingPostcode;
+        this.customerEmail = customerEmail;
+    }
+    
     public PrepareCheckout() {
     }
 
@@ -149,10 +162,35 @@ public class PrepareCheckout {
         form.add("customParameters[SIBSMULTIBANCO_PtmntEntty]", SIBSMULTIBANCO_PtmntEntty);
         form.add("customParameters[SIBSMULTIBANCO_RefIntlDtTm]", SIBSMULTIBANCO_RefIntlDtTm);
         form.add("customParameters[SIBSMULTIBANCO_RefLmtDtTm]", SIBSMULTIBANCO_RefLmtDtTm);
-        form.add("billing.country", billingCountry);
-        if (merchantTransactionId != null) {
+        
+        if(this.cardHolder != null) {
+            form.add("card.holder", this.cardHolder);
+        }
+        
+        if(this.customerEmail != null) {
+            form.add("customer.email", this.customerEmail);
+        }
+        
+        if(this.billingCountry != null) {
+            form.add("billing.country", this.billingCountry);
+        }
+        
+        if(this.billingCity != null) {
+            form.add("billing.city", this.billingCity);
+        }
+        
+        if(this.billingStreet1 != null) {
+            form.add("billing.street1", this.billingStreet1);
+        }
+        
+        if(this.billingPostcode != null) {
+            form.add("billing.postcode", this.billingPostcode);
+        }
+        
+        if (this.merchantTransactionId != null) {
             form.add("merchantTransactionId", merchantTransactionId);
         }
+        
         return form;
     }
 

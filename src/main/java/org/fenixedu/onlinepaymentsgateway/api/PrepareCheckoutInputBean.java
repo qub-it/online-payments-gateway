@@ -17,6 +17,13 @@ public class PrepareCheckoutInputBean {
     public Boolean useMBway = false;
     public Boolean useMB = false;
 
+    private String billingCountry;
+    private String billingCity;
+    private String billingStreet1;
+    private String billingPostcode;
+    private String customerEmail;
+    private String cardHolder;
+    
     public PrepareCheckoutInputBean(BigDecimal amount, String merchantTransactionId, String shopperResultUrl,
             DateTime sibsRefIntDate, DateTime sibsRefLmtDate) {
         super();
@@ -36,7 +43,17 @@ public class PrepareCheckoutInputBean {
 
     public PrepareCheckoutInputBean() {
     }
-
+    
+    public void fillBillingData(final String cardHolder, final String billingCountry, final String billingCity, 
+            final String billingStreet1, final String billingPostcode, final String customerEmail) {
+        this.cardHolder = cardHolder;
+        this.billingCountry = billingCountry;
+        this.billingCity = billingCity;
+        this.billingStreet1 = billingStreet1;
+        this.billingPostcode = billingPostcode;
+        this.customerEmail = customerEmail;
+    }
+    
     public boolean isPropertiesValid() {
         boolean returnValue = true;
         returnValue &= amount != null && amount.compareTo(BigDecimal.ZERO) > 0;
@@ -114,6 +131,54 @@ public class PrepareCheckoutInputBean {
 
     public void setUseMB(Boolean useMB) {
         this.useMB = useMB;
+    }
+    
+    public String getBillingCountry() {
+        return billingCountry;
+    }
+
+    public void setBillingCountry(String billingCountry) {
+        this.billingCountry = billingCountry;
+    }
+
+    public String getBillingCity() {
+        return billingCity;
+    }
+
+    public void setBillingCity(String billingCity) {
+        this.billingCity = billingCity;
+    }
+
+    public String getBillingStreet1() {
+        return billingStreet1;
+    }
+
+    public void setBillingStreet1(String billingStreet1) {
+        this.billingStreet1 = billingStreet1;
+    }
+
+    public String getBillingPostcode() {
+        return billingPostcode;
+    }
+
+    public void setBillingPostcode(String billingPostcode) {
+        this.billingPostcode = billingPostcode;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
     }
 
     @Override

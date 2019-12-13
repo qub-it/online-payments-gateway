@@ -291,14 +291,21 @@ public class SIBSOnlinePaymentsGatewayService {
 
         final String paymentType = useMB ? PaymentType.PA.name() : PaymentType.DB.name();
 
-        final String billingCountry = "PT";
         final BigDecimal paymentAmount = prepareCheckoutInputBean.getAmount().setScale(2, RoundingMode.HALF_EVEN);
 
         final String shopperResultUrl = prepareCheckoutInputBean.getShopperResultUrl();
 
         PrepareCheckout prepCheckout = new PrepareCheckout(entityId, paymentAmount.toString(), paymentCurrency, paymentType,
-                billingCountry, this.initializeServiceBean.getEnvironmentMode());
+                this.initializeServiceBean.getEnvironmentMode());
 
+        prepCheckout.fillBillingData(
+                prepareCheckoutInputBean.getCardHolder(),
+                prepareCheckoutInputBean.getBillingCountry(), 
+                prepareCheckoutInputBean.getBillingCity(), 
+                prepareCheckoutInputBean.getBillingStreet1(), 
+                prepareCheckoutInputBean.getBillingPostcode(), 
+                prepareCheckoutInputBean.getCustomerEmail());
+        
         if (useMB) {
             final String sibsRefIntDate = prepareCheckoutInputBean.getSibsRefIntDate().toString();
             final String sibsRefLmtDate = prepareCheckoutInputBean.getSibsRefLmtDate().toString();
