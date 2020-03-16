@@ -14,7 +14,6 @@ import java.util.logging.SimpleFormatter;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -34,6 +33,7 @@ import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentBrand;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareCheckout;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareCheckoutResult;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareHandle;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBCheckout;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBCheckoutResult;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PrepareMBWayCheckout;
@@ -59,7 +59,6 @@ public class SIBSOnlinePaymentsGatewayService {
     private WebTarget webTargetBase;
     private SIBSInitializeServiceBean initializeServiceBean;
     private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss+SSSS");
-    //DateTimeFormatter formatterPaymentDate = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");//TODO backup diferente dateformat
 
     public SIBSOnlinePaymentsGatewayService(SIBSInitializeServiceBean initializeServiceBean) {
         this.initializeServiceBean = initializeServiceBean;
@@ -298,14 +297,10 @@ public class SIBSOnlinePaymentsGatewayService {
         PrepareCheckout prepCheckout = new PrepareCheckout(entityId, paymentAmount.toString(), paymentCurrency, paymentType,
                 this.initializeServiceBean.getEnvironmentMode());
 
-        prepCheckout.fillBillingData(
-                prepareCheckoutInputBean.getCardHolder(),
-                prepareCheckoutInputBean.getBillingCountry(), 
-                prepareCheckoutInputBean.getBillingCity(), 
-                prepareCheckoutInputBean.getBillingStreet1(), 
-                prepareCheckoutInputBean.getBillingPostcode(), 
-                prepareCheckoutInputBean.getCustomerEmail());
-        
+        prepCheckout.fillBillingData(prepareCheckoutInputBean.getCardHolder(), prepareCheckoutInputBean.getBillingCountry(),
+                prepareCheckoutInputBean.getBillingCity(), prepareCheckoutInputBean.getBillingStreet1(),
+                prepareCheckoutInputBean.getBillingPostcode(), prepareCheckoutInputBean.getCustomerEmail());
+
         if (useMB) {
             final String sibsRefIntDate = prepareCheckoutInputBean.getSibsRefIntDate().toString();
             final String sibsRefLmtDate = prepareCheckoutInputBean.getSibsRefLmtDate().toString();
@@ -405,7 +400,6 @@ public class SIBSOnlinePaymentsGatewayService {
         final String requestLog =
                 "Entity Id = " + entityId + ", Authorization = " + bearerToken + ", Checkout Id = " + checkoutId;
 
-        //try { how to handle because can't have responseLog - how to handle httpbadrequest..
         String responseLog = null;
         try {
             responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
@@ -421,16 +415,6 @@ public class SIBSOnlinePaymentsGatewayService {
 
             transactionStatus.setPaymentDate(DateTime.parse(transactionStatus.getTimestamp(), formatter));
 
-            /*PaymentStatusBean paymentStatusBean = new PaymentStatusBean(transactionStatus.getId(), //2019-07-10 18:40:34+0000
-                    DateTime.parse(transactionStatus.getTimestamp(), formatter).toDateTime(), transactionStatus.getPaymentType(),
-                    transactionStatus.getPaymentBrand(), transactionStatus.getAmount(), transactionStatus.getCurrency(),
-                    DateTime.parse(transactionStatus.getResultDetails().getConnectorTxID2(), formatter2).toDateTime(),
-                    transactionStatus.getResult().getCode(), transactionStatus.getResult().getDescription(), operationResultType,
-                    operationResultDescription);
-            
-            paymentStatusBean.setRequestLog(requestLog);
-            paymentStatusBean.setResponseLog(responseLog);*/
-
             return transactionStatus;
 
         } catch (WebApplicationException e) {
@@ -442,7 +426,6 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //Get transaction report from transaction ID
     public PaymentStateBean getPaymentTransactionReportByTransactionId(String transactionId)
             throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
@@ -560,8 +543,8 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    
-    public List<PaymentStateBean> getPaymentTransactionsReportListByMerchantId(String merchantTransactionId) throws OnlinePaymentsGatewayCommunicationException {
+    public List<PaymentStateBean> getPaymentTransactionsReportListByMerchantId(String merchantTransactionId)
+            throws OnlinePaymentsGatewayCommunicationException {
         if (!this.initializeServiceBean.isAuthPropertiesValid()) {
             throw new IllegalArgumentException("Invalid Service Authentication");
         }
@@ -585,7 +568,7 @@ public class SIBSOnlinePaymentsGatewayService {
         try {
             responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).get(String.class);
             MerchantIdReportBean merchantReport = customMapper(responseLog, MerchantIdReportBean.class);
-            
+
             final List<PaymentStateBean> result = new ArrayList<>();
             for (final Payment payment : merchantReport.getPayments()) {
                 String lastPayment = payment.toString();
@@ -610,7 +593,7 @@ public class SIBSOnlinePaymentsGatewayService {
                     throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog,
                             "Request and Response details do not match.");
                 }
-                
+
                 result.add(transactionReport);
             }
 
@@ -623,7 +606,60 @@ public class SIBSOnlinePaymentsGatewayService {
         }
     }
 
-    //TODO Juntar ao PaymentStateBean, verificar como lidar com "Type" e "Payload"
+    /**
+     * Handle Payment can be used for both Refund and Reversal of payments.
+     * Refund (RF) should be used against debit (DB), in this case used with MBway,Credit Card payments and already paid
+     * Multibanco payments.
+     * Reversal (RV) should be used for canceling MBway requests and Multibanco payments generated.
+     */
+    public PaymentStateBean handlePayment(String transactionId, HandleRequestBean handleRequestBean)
+            throws OnlinePaymentsGatewayCommunicationException {
+        if (!this.initializeServiceBean.isAuthPropertiesValid()) {
+            throw new IllegalArgumentException("Invalid Service Authentication");
+        }
+        if (transactionId == null || transactionId.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Transaction Id");
+        }
+        WebTarget target = webTargetBase.path("payments/" + transactionId);
+
+        final String bearerToken = this.initializeServiceBean.getBearerToken();
+        final String entityId = this.initializeServiceBean.getEntityId();
+        final String paymentCurrency = this.initializeServiceBean.getPaymentCurrency();
+        final String paymentType = handleRequestBean.getPaymentType().name();
+        final String paymentAmount = handleRequestBean.getAmount().setScale(2, RoundingMode.HALF_EVEN).toString();
+
+        final PrepareHandle handlePayment = new PrepareHandle(entityId, paymentAmount, paymentCurrency, paymentType,
+                this.initializeServiceBean.getEnvironmentMode());
+        final String requestLog = handlePayment.toString();
+        Form form = new Form(handlePayment.asMap());
+        String responseLog = null;
+        Builder builder = target.request("application/x-www-form-urlencoded; charset=UTF-8").accept(MediaType.APPLICATION_JSON);
+
+        try {
+            responseLog = builder.header(HttpHeaders.AUTHORIZATION, bearerToken).post(Entity.form(form), String.class);
+            PaymentStateBean refundResult = customMapper(responseLog, PaymentStateBean.class);
+
+            SibsResultCodeType operationResultType = validateSibsResult(refundResult.getResult().getCode());
+            String operationResultDescription =
+                    operationResultDescription(refundResult.getResult().getDescription(), operationResultType);
+
+            refundResult.setOperationResultType(operationResultType);
+            refundResult.setOperationResultDescription(operationResultDescription);
+            refundResult.setRequestLog(requestLog);
+            refundResult.setResponseLog(responseLog);
+
+            logger.debug(refundResult.toString());
+
+            return refundResult;
+
+        } catch (WebApplicationException e) {
+            responseLog = e.getResponse().readEntity(String.class);
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
+        } catch (Exception e) {
+            throw new OnlinePaymentsGatewayCommunicationException(requestLog, responseLog, e);
+        }
+    }
+
     public PaymentStateBean handleNotificationRequest(String initializationVector, String authTag, String encryptedPayload)
             throws Exception {
         logger.debug("Request encrypted: " + encryptedPayload.toString());
@@ -635,7 +671,6 @@ public class SIBSOnlinePaymentsGatewayService {
             decryptedPayload = notification.decryptPayload();
             logger.debug("\n Request desencrypted: " + decryptedPayload);
 
-            //TODO validate result with OnlinePaymentOperationResultType && validateSibsResult
             NotificationBean payload = customMapper(decryptedPayload, NotificationBean.class);
             logger.debug("\n Payload content: " + payload.toString());
 
@@ -643,7 +678,7 @@ public class SIBSOnlinePaymentsGatewayService {
 
             final PaymentStateBean notificationReport = customMapper(payloadOnly, PaymentStateBean.class);
             notificationReport.setNotificationType(payload.getType().toString());
-            
+
             final SibsResultCodeType operationResultType = validateSibsResult(notificationReport.getResult().getCode());
             final String operationResultDescription =
                     operationResultDescription(notificationReport.getResult().getDescription(), operationResultType);
@@ -671,15 +706,15 @@ public class SIBSOnlinePaymentsGatewayService {
 
         return payload;
     }
-    
+
     public static String notificationEncryptedPayload(final HttpServletRequest request) throws Exception {
         return request.getReader().readLine();
     }
-    
+
     public static String notificationInitializationVector(final HttpServletRequest request) {
         return request.getHeader("X-Initialization-Vector");
     }
-    
+
     public static String notificationAuthenticationTag(final HttpServletRequest request) {
         return request.getHeader("X-Authentication-Tag");
     }
@@ -708,7 +743,6 @@ public class SIBSOnlinePaymentsGatewayService {
     private String operationResultDescription(String resultDescription, SibsResultCodeType operationResultType) {
         if (operationResultType != null || resultDescription != null) {
             if (operationResultType != null && operationResultType.isSuccess()) {
-                //TODO Verify if result is as expected if true
                 return "Valid Operation / " + operationResultType.name() + " / " + resultDescription;
             } else {
                 return "Invalid Operation / " + operationResultType.name() + " / " + resultDescription;
@@ -723,7 +757,6 @@ public class SIBSOnlinePaymentsGatewayService {
         return result;
     }
 
-    //TODO remove file logging on service after testing webhooks (needs to be on client, not on server side)
     private Logger fileLogger(String fileName) throws SecurityException, IOException {
         java.util.logging.Logger filelogger =
                 java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName());
