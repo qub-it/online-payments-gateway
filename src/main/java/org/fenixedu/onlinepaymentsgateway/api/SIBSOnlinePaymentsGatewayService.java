@@ -482,7 +482,7 @@ public class SIBSOnlinePaymentsGatewayService {
     }
 
     @Deprecated
-    // The last transaction may not be a payment. The payment state status must be presented and analysed 
+    // The last transaction may not be a payment. The payment state status must be presented and analysed
     // with each transaction associated with merchant transaction id
     public PaymentStateBean getPaymentTransactionReportByMerchantId(String merchantTransactionId)
             throws OnlinePaymentsGatewayCommunicationException {
@@ -762,8 +762,9 @@ public class SIBSOnlinePaymentsGatewayService {
                 java.util.logging.Logger.getLogger(SIBSOnlinePaymentsGatewayService.class.getName());
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss.SSS");
         File logDir = new File("./logs/");
-        if (!(logDir.exists()))
+        if (!(logDir.exists())) {
             logDir.mkdir();
+        }
         FileHandler fh = new FileHandler("logs/" + fileName + "_" + format.format(Calendar.getInstance().getTime()) + ".log");
         fh.setFormatter(new SimpleFormatter());
         filelogger.addHandler(fh);
