@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.fenixedu</groupId>
-	<artifactId>online-payments-gateway</artifactId>
+	<artifactId>online-payments-gateway-iscte</artifactId>
 	<version>1.2.2</version>
 	<packaging>jar</packaging>
 
-	<name>Online Payments Gateway</name>
+	<name>Online Payments Gateway - ISCTE</name>
 
 	<properties>
 		<java.compilation.source.version>1.8</java.compilation.source.version>
