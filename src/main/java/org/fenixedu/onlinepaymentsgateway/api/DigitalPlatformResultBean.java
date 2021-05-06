@@ -20,6 +20,8 @@ public interface DigitalPlatformResultBean {
 
     public boolean isPaid();
 
+    public boolean isOperationSuccess();
+    
     public BigDecimal getAmount();
 
     public String getPaymentResultCode();

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
         "merchantAccountId", "result", "resultDetails", "merchant", "customer", "authentication", "billing", "customParameters",
         "card", "threeDSecure", "risk", "redirect", "buildNumber", "timestamp", "ndc", "virtualAccount", "presentationAmount",
         "presentationCurrency", "referencedId" })
+// TODO : Rename to SibsPaymentStateBean
 public class PaymentStateBean implements DigitalPlatformResultBean {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
