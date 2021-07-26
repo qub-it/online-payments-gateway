@@ -1,4 +1,5 @@
 - New Feature: Refund and Reversals supported.
+- Refactor: Add abstraction to support MeoWallet, specifically DigitalPlatformResultBean interface
 
 1.2.2 (13-12-2019)
 - Improvement: Send billing data for SIBS OPPWA in online payment request

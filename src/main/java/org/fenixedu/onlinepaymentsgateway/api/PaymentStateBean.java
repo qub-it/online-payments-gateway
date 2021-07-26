@@ -25,7 +25,8 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
         "merchantAccountId", "result", "resultDetails", "merchant", "customer", "authentication", "billing", "customParameters",
         "card", "threeDSecure", "risk", "redirect", "buildNumber", "timestamp", "ndc", "virtualAccount", "presentationAmount",
         "presentationCurrency", "referencedId" })
-public class PaymentStateBean {
+// TODO : Rename to SibsPaymentStateBean
+public class PaymentStateBean implements DigitalPlatformResultBean {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonPropertyOrder({ "entityId" })
@@ -924,14 +925,17 @@ public class PaymentStateBean {
     public PaymentStateBean() {
     }
 
+    @Override
     public boolean isPaid() {
-        return this.operationResultType.isPaid() && (PaymentType.DB.name().equals(getPaymentType()) || PaymentType.RC.name().equals(getPaymentType()));
+        return this.operationResultType.isPaid()
+                && (PaymentType.DB.name().equals(getPaymentType()) || PaymentType.RC.name().equals(getPaymentType()));
     }
 
     public boolean isOperationSuccess() {
         return this.operationResultType.isSuccess();
     }
 
+    @Override
     public DateTime getPaymentDate() {
         return paymentDate;
     }
@@ -956,6 +960,7 @@ public class PaymentStateBean {
         this.notificationType = notificationType;
     }
 
+    @Override
     @JsonProperty("id")
     public String getTransactionId() {
         return transactionId;
@@ -966,6 +971,7 @@ public class PaymentStateBean {
         this.transactionId = transactionId;
     }
 
+    @Override
     @JsonProperty("paymentType")
     public String getPaymentType() {
         return paymentType;
@@ -976,6 +982,7 @@ public class PaymentStateBean {
         this.paymentType = paymentType;
     }
 
+    @Override
     @JsonProperty("paymentBrand")
     public String getPaymentBrand() {
         return paymentBrand;
@@ -986,6 +993,7 @@ public class PaymentStateBean {
         this.paymentBrand = paymentBrand;
     }
 
+    @Override
     @JsonProperty("amount")
     public BigDecimal getAmount() {
         return amount;
@@ -1016,6 +1024,7 @@ public class PaymentStateBean {
         this.descriptor = descriptor;
     }
 
+    @Override
     @JsonProperty("merchantTransactionId")
     public String getMerchantTransactionId() {
         return merchantTransactionId;
@@ -1126,6 +1135,7 @@ public class PaymentStateBean {
         this.buildNumber = buildNumber;
     }
 
+    @Override
     @JsonProperty("timestamp")
     public String getTimestamp() {
         return timestamp;
@@ -1274,6 +1284,16 @@ public class PaymentStateBean {
             e.printStackTrace();
         }
         return json;
+    }
+
+    @Override
+    public String getPaymentResultCode() {
+        return result.code;
+    }
+
+    @Override
+    public String getPaymentResultDescription() {
+        return result.description;
     }
 
 }
