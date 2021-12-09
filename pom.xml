@@ -15,7 +15,7 @@
 		<java.compilation.target.version>1.8</java.compilation.target.version>
 		<version.org.apache.maven.plugins.maven.compiler.plugin>3.1</version.org.apache.maven.plugins.maven.compiler.plugin>
 		<version.jackson>2.9.9</version.jackson>
-		<version.jackson.databind>2.9.10.4</version.jackson.databind>
+		<version.jackson.databind>2.9.10.8</version.jackson.databind>
 	</properties>
 
 	<dependencies>
