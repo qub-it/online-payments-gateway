@@ -58,7 +58,7 @@ public class SIBSOnlinePaymentsGatewayService {
     private Client client = ClientBuilder.newBuilder().register(feature).build();
     private WebTarget webTargetBase;
     private SIBSInitializeServiceBean initializeServiceBean;
-    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss+SSSS");
+    private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZ");
 
     public SIBSOnlinePaymentsGatewayService(SIBSInitializeServiceBean initializeServiceBean) {
         this.initializeServiceBean = initializeServiceBean;
