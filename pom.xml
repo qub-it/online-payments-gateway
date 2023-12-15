@@ -11,7 +11,7 @@
 	<name>Online Payments Gateway</name>
 
 	<properties>
-		<java.compilation.version>11</java.compilation.version>
+		<java.compilation.version>17</java.compilation.version>
 		<version.org.apache.maven.plugins.maven.compiler.plugin>3.1</version.org.apache.maven.plugins.maven.compiler.plugin>
 		<version.jackson>2.9.9</version.jackson>
 		<version.jackson.databind>2.9.10.8</version.jackson.databind>
