@@ -1,3 +1,4 @@
+1.4.0 (01-07-2024)
 - Improvement: Removes locked versions from pom [#qubIT-Omnis-6159]
 - Improvement: Upgrades to java 17 [#qubIT-Omnis-4749]
 - Improvement: Upgrades to java 11 [#qubIT-Omnis-4753]
