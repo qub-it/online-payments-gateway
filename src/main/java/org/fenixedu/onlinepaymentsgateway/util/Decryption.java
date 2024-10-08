@@ -1,8 +1,11 @@
 package org.fenixedu.onlinepaymentsgateway.util;
 
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -73,7 +76,7 @@ public class Decryption {
         final byte[] encryptedBytes = Hex.decodeHex((payload + authTag).toCharArray());
 
         final SecretKeySpec sKey = new SecretKeySpec(bKey, "AES");
-        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "SunJCE");
+        final Cipher cipher = getCipherInstance();
         final GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, bIV);
         cipher.init(Cipher.DECRYPT_MODE, sKey, spec);
 
@@ -81,5 +84,9 @@ public class Decryption {
 
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
-    
+
+    protected static Cipher getCipherInstance() throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
+        return Cipher.getInstance("AES/GCM/NoPadding", "SunJCE");
+    }
+
 }
