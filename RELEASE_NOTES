@@ -1,3 +1,4 @@
+- Improvement: Removes specific version of servlet-api dependency [#qubIT-Omnis-5689]
 - Improvement: Adds test cases for cipher [#qubIT-Omnis-6262]
 
 1.4.0 (01-07-2024)

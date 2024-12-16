@@ -8,6 +8,18 @@
 	<version>1.4.0</version>
 	<packaging>jar</packaging>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.qubit.solution.fenixedu</groupId>
+				<artifactId>fenixedu-oss-dependency-management</artifactId>
+				<version>331</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<name>Online Payments Gateway</name>
 
 	<properties>
@@ -55,7 +67,7 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
