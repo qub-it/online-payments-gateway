@@ -13,7 +13,7 @@
 	<properties>
 		<java.compilation.version>17</java.compilation.version>
 		<version.org.apache.maven.plugins.maven.compiler.plugin>3.1</version.org.apache.maven.plugins.maven.compiler.plugin>
-		<version.jackson>2.14.2</version.jackson>
+		<version.jackson>2.15.0</version.jackson>
 	</properties>
 
 	<dependencies>
