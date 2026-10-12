@@ -1,4 +1,5 @@
 - Improvement: Adds test cases for cipher [#qubIT-Omnis-6262]
+- Improvement: Upgrades SLF4J API to 2.0.17 [#qubIT-Omnis-11312]
 
 1.4.0 (01-07-2024)
 - Improvement: Removes locked versions from pom [#qubIT-Omnis-6159]
